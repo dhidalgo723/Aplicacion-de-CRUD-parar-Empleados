@@ -31,29 +31,17 @@ public class Main {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
-    // =========================================================================
-    // METODO GENERICO: insertar
-    //
-    // En lugar de tener un metodo por cada tabla, este unico metodo sirve
-    // para cualquier INSERT. Recibe:
-    //   - tabla:    nombre de la tabla donde insertar ("empleados", "plazas"...)
-    //   - columnas: array con los nombres de las columnas ["nombre","apellido"...]
-    //   - mensajes: array con lo que se le pregunta al usuario por cada columna
-    //               ["Nombre del empleado:", "Apellido del empleado:"...]
-    //
-    // Funciona asi:
-    //   1. Pide cada dato al usuario con un JOptionPane
-    //   2. Construye el SQL dinamicamente segun cuantas columnas haya
-    //   3. Ejecuta el INSERT
-    // =========================================================================
-    public static void insertar(String tabla, String[] columnas, String[] mensajes) {
+    // metodo de insertar
+    // le pasamos por parametros la tabla, las columnas, y cada columna del usuario
+    // primero pide el dato al usuario, construye el sql y hace el insert
+    public static void insertar(String tabla, String[] columnas, String[] celda) {
 
         // array donde guardaremos las respuestas del usuario
         String[] valores = new String[columnas.length];
 
         // pedimos cada dato al usuario en orden
-        for (int i = 0; i < mensajes.length; i++) {
-            valores[i] = JOptionPane.showInputDialog(null, mensajes[i]);
+        for (int i = 0; i < celda.length; i++) {
+            valores[i] = JOptionPane.showInputDialog(null, celda[i]);
             // si el usuario cancela cualquier dialogo, salimos sin hacer nada
             if (valores[i] == null) {
                 return;
@@ -98,6 +86,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        // look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ex) {
@@ -107,7 +96,7 @@ public class Main {
         // frame
         JFrame frame = new JFrame("Calculadora");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setSize(500, 550);
+        frame.setSize(1000, 500);
         frame.setResizable(false);
         frame.setLayout(new BorderLayout());
 
@@ -143,6 +132,7 @@ public class Main {
 
         // llama a la funcion con lambda y pasa por parametros el nombre de la tabla
         remove_empleado.addActionListener(e -> eliminar("empleados"));
+        update_empleado.addActionListener(e -> actualizar("empleados"));
 
         // pestaña de plazas
         JPanel panel_plaza = new JPanel(new GridBagLayout());
@@ -163,6 +153,7 @@ public class Main {
         ));
 
         remove_plaza.addActionListener(e -> eliminar("plazas"));
+        update_plaza.addActionListener(e -> actualizar("plazas"));
 
         // pestaña de nominas
         JPanel panel_nominas = new JPanel(new GridBagLayout());
@@ -183,35 +174,45 @@ public class Main {
         ));
 
         remove_nomina.addActionListener(e -> eliminar("nominas"));
+        update_nomina.addActionListener(e -> actualizar("nominas"));
 
         // gbc de empleados
-        gbc.gridy = 0;
+        gbc.gridx = 0;
         panel_empleados.add(new JLabel("Empleados"), gbc);
-        gbc.gridy = 1;
+        gbc.gridx = 1;
         panel_empleados.add(add_empleado, gbc);
-        gbc.gridy = 2;
+        gbc.gridx = 2;
         panel_empleados.add(remove_empleado, gbc);
-        gbc.gridy = 3;
+        gbc.gridx = 3;
         panel_empleados.add(read_empleado, gbc);
-        gbc.gridy = 4;
+        gbc.gridx = 4;
         panel_empleados.add(update_empleado, gbc);
-        gbc.gridy = 5;
+        gbc.gridx = 5;
         panel_empleados.add(new JScrollPane(textarea_empleados), gbc);
 
         tabs.addTab("Empleados", panel_empleados);
 
         // gbc de plaza
+        gbc.gridx = 0;
         gbc.gridy = 0;
         panel_plaza.add(new JLabel("Plazas"), gbc);
+        gbc.gridx = 0;
         gbc.gridy = 1;
         panel_plaza.add(add_plaza, gbc);
-        gbc.gridy = 2;
+        gbc.gridx = 1;
+        gbc.gridy = 1;
         panel_plaza.add(remove_plaza, gbc);
-        gbc.gridy = 3;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
         panel_plaza.add(read_plaza, gbc);
-        gbc.gridy = 4;
+        gbc.gridx = 1;
+        gbc.gridy = 2;
         panel_plaza.add(update_plaza, gbc);
-        gbc.gridy = 5;
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        panel_plaza.add(new JScrollPane(textarea_plazas), gbc);
+        gbc.gridx = 1;
+        gbc.gridy = 3;
         panel_plaza.add(new JScrollPane(textarea_plazas), gbc);
 
         tabs.addTab("Plazas", panel_plaza);
@@ -241,30 +242,40 @@ public class Main {
     // metodo de eliminar
     // primero pide el id, despues ejecuta el delete y avisa si el id no existia
     public static void eliminar(String tabla) {
-
         String del_id = JOptionPane.showInputDialog(null, "ID a eliminar de " + tabla + ":");
         if (del_id == null) {
             return; // usuario cancelo
         }
-        try {
-            int id = Integer.parseInt(del_id);
+        try (Connection con = getConnection(); PreparedStatement stmt = con.prepareStatement("DELETE FROM " + tabla + " WHERE id = ?")) {
 
-            try (Connection con = getConnection(); PreparedStatement stmt = con.prepareStatement("DELETE FROM " + tabla + " WHERE id = ?")) {
+            stmt.setInt(1, Integer.parseInt(del_id));
+            int del_filas = stmt.executeUpdate();
 
-                stmt.setInt(1, id);
-                int del_filas = stmt.executeUpdate();
-
-                if (del_filas > 0) {
-                    JOptionPane.showMessageDialog(null, "Registro eliminado correctamente de " + tabla + ".");
-                } else {
-                    // executeUpdate devuelve 0 si el ID no existia en la tabla
-                    JOptionPane.showMessageDialog(null, "No se encontro ningun registro con ID " + id + " en " + tabla,
-                            "Aviso", JOptionPane.WARNING_MESSAGE);
-                }
+            if (del_filas > 0) {
+                JOptionPane.showMessageDialog(null, "Registro eliminado correctamente de " + tabla + ".");
+            } else {
+                // executeUpdate devuelve 0 si el ID no existia en la tabla
+                JOptionPane.showMessageDialog(null, "No se encontro ningun registro con ID " + del_id + " en " + tabla,
+                        "Aviso", JOptionPane.WARNING_MESSAGE);
             }
-
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al eliminar de " + tabla + ":\n" + e.getMessage(),
+                    "Error SQL", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // metodo de actualizar (update)
+    public static void actualizar(String tabla) {
+        String upd_id = JOptionPane.showInputDialog(null, "ID a actualizar de " + tabla + ":");
+        try (Connection con = getConnection(); PreparedStatement stmt = con.prepareStatement("UPDATE " + tabla + " SET ... WHERE id = ?")) {
+            // para actualizarlo
+            stmt.setInt(1, Integer.parseInt(upd_id));
+            stmt.executeUpdate();
+
+            JOptionPane.showMessageDialog(null, "Registro actualizado correctamente de " + tabla + ".");
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al actualizar " + tabla + ":\n" + e.getMessage(),
                     "Error SQL", JOptionPane.ERROR_MESSAGE);
         }
     }
