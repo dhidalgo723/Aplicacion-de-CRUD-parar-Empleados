@@ -44,7 +44,7 @@ public class Main {
         // frame
         JFrame frame = new JFrame("Calculadora");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setSize(1500, 600);
+        frame.setSize(1000, 600);
         frame.setResizable(false);
         frame.setLayout(new BorderLayout());
 
