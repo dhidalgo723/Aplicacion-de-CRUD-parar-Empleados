@@ -6,11 +6,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -29,6 +26,7 @@ public class Main {
     // variables para la base de datos
     private static final String URL = "jdbc:sqlite:MakuPlazas.db";
 
+    // para tener la conexion en la base de datos
     private static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL);
     }
@@ -75,14 +73,14 @@ public class Main {
 
         // listeners de tipos de plaza
         add_tiposplaza.addActionListener(e -> insertar(
-                "tiposplaza",
-                new String[]{"nombre", "descripcion"},
+                "TIPUS_PLACA",
+                new String[]{"NOM", "FUNCIO"},
                 new String[]{"Nombre del tipo de plaza:", "Descripcion del tipo de plaza:"}
         ));
-        remove_tiposplaza.addActionListener(e -> delete("tiposplaza", "nombre"));
+        remove_tiposplaza.addActionListener(e -> delete("TIPUS_PLACA", "NOM"));
         update_tiposplaza.addActionListener(e -> update(
-                "tiposplaza",
-                new String[]{"nombre", "descripcion"},
+                "TIPUS_PLACA",
+                new String[]{"NOM", "FUNCIO"},
                 new String[]{"Nuevo nombre:", "Nueva descripcion:"}
         ));
 
@@ -102,9 +100,10 @@ public class Main {
 
         add_plaza.setPreferredSize(new java.awt.Dimension(add_plaza.getPreferredSize().width, 50));
         remove_plaza.setPreferredSize(new java.awt.Dimension(remove_plaza.getPreferredSize().width, 50));
+
         update_plaza.setPreferredSize(new java.awt.Dimension(update_plaza.getPreferredSize().width, 50));
 
-        // textfields de plazas
+        // textfield de plazas
         JTextField[] campos_codi_pla = new JTextField[num_filas];
         JTextField[] campos_nom_pla = new JTextField[num_filas];
         JTextField[] campos_salari_pla = new JTextField[num_filas];
@@ -114,13 +113,13 @@ public class Main {
 
         // listeners de plazas
         add_plaza.addActionListener(e -> insertar(
-                "plazas",
+                "PLACA",
                 new String[]{"nombre", "descripcion"},
                 new String[]{"Nombre de la plaza:", "Descripcion de la plaza:"}
         ));
-        remove_plaza.addActionListener(e -> delete("plazas", "CODI"));
+        remove_plaza.addActionListener(e -> delete("PLACA", "CODI"));
         update_plaza.addActionListener(e -> update(
-                "plazas",
+                "PLACA",
                 new String[]{"nombre", "descripcion"},
                 new String[]{"Nuevo nombre:", "Nueva descripcion:"}
         ));
@@ -151,13 +150,13 @@ public class Main {
 
         // listeners de empleados
         add_empleado.addActionListener(e -> insertar(
-                "empleados",
+                "EMPLEAT",
                 new String[]{"nombre", "descripcion"},
                 new String[]{"Nombre del empleado:", "Descripcion del empleado:"}
         ));
-        remove_empleado.addActionListener(e -> delete("empleados", "NSS"));
+        remove_empleado.addActionListener(e -> delete("EMPLEAT", "NSS"));
         update_empleado.addActionListener(e -> update(
-                "empleados",
+                "EMPLEAT",
                 new String[]{"nombre", "descripcion"},
                 new String[]{"Nuevo nombre:", "Nueva descripcion:"}
         ));
@@ -186,13 +185,13 @@ public class Main {
 
         // listeners de nominas
         add_nomina.addActionListener(e -> insertar(
-                "nominas",
+                "NOMINA",
                 new String[]{"empleado_id", "cantidad", "fecha"},
                 new String[]{"ID del empleado:", "Cantidad de la nomina:", "Fecha (YYYY-MM-DD):"}
         ));
-        remove_nomina.addActionListener(e -> delete("nominas", "ID_NOMINA"));
+        remove_nomina.addActionListener(e -> delete("NOMINA", "ID_NOMINA"));
         update_nomina.addActionListener(e -> update(
-                "nominas",
+                "NOMINA",
                 new String[]{"empleado_id", "cantidad", "fecha"},
                 new String[]{"Nuevo ID empleado:", "Nueva cantidad:", "Nueva fecha (YYYY-MM-DD):"}
         ));
@@ -269,6 +268,7 @@ public class Main {
         gbc.gridy = 2;
         panel_listarplaza.add(new JLabel("Nomplaza"), gbc);
 
+        // bucle pa ir creando los textfield
         for (int i = 0; i < num_filas; i++) {
             campos_codi_pla[i] = new JTextField();
             campos_nom_pla[i] = new JTextField();
@@ -335,6 +335,7 @@ public class Main {
         gbc.gridy = 2;
         panel_listarempleados.add(new JLabel("IBAN"), gbc);
 
+        // bucle pa ir creando los textfield
         for (int i = 0; i < num_filas; i++) {
             campos_nss_emp[i] = new JTextField();
             campos_nom_emp[i] = new JTextField();
@@ -389,6 +390,7 @@ public class Main {
         gbc.gridy = 2;
         panel_listarnominas.add(new JLabel("Funcion"), gbc);
 
+        // bucle pa ir creando los textfield
         for (int i = 0; i < num_filas; i++) {
             campos_id_nom[i] = new JTextField();
             campos_nom_nom[i] = new JTextField();
@@ -413,13 +415,13 @@ public class Main {
 
         // añadimos
         frame.add(tabs, BorderLayout.CENTER);
+        create();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
-    public static void crearBaseDeDatos() {
-        try (Connection con = DriverManager.getConnection("jdbc:sqlite:MakuPlazas.db"); Statement stmt = con.createStatement()) {
-
+    public static void create() {
+        try (Connection con = DriverManager.getConnection(URL); Statement stmt = con.createStatement()) {
             String sql = "CREATE TABLE IF NOT EXISTS TIPUS_PLACA (\r\n"
                     + "    NOM VARCHAR(25) PRIMARY KEY,\r\n"
                     + "    FUNCIO VARCHAR(200) NOT NULL\r\n"
@@ -469,49 +471,46 @@ public class Main {
         }
     }
 
-    public static void add(String tabla) {
-        String add_id = JOptionPane.showInputDialog(null, "ID a añadir de " + tabla + ":");
-    }
-
     // metodo de insertar
     // le pasamos por parametros la tabla, las columnas, y cada columna del usuario
     // primero pide el dato al usuario, construye el sql y hace el insert
-    public static void insertar(String tabla, String[] columnas, String[] celda) {
+    public static void insertar(String tabla, String[] columnas, String[] registros) {
 
-        // array donde guardaremos las respuestas del usuario
-        String[] valores = new String[columnas.length];
+        // cogemos todas la longitud de las columnas
+        // para ir preguntando al usuario cada registro e ir guardandolo en esta variable
+        String[] dato_registro = new String[columnas.length];
+        // hacemos el comando para el sql
+        String sql = ("INSERT INTO " + tabla + " VALUES ");
+        String dato = "";
+        String columna = "";
 
         // pedimos cada dato al usuario en orden
-        for (int i = 0; i < celda.length; i++) {
-            valores[i] = JOptionPane.showInputDialog(null, celda[i]);
+        for (int j = 0; j < columnas.length; j++) {
+            // guarda la respuesta del usuario
+            dato_registro[j] = JOptionPane.showInputDialog(null, registros[j]);
             // si el usuario cancela cualquier dialogo, salimos sin hacer nada
-            if (valores[i] == null) {
+            if (dato_registro[j] == null) {
                 return;
             }
         }
 
-        // construimos el SQL dinamicamente:
-        // para 3 columnas genera: INSERT INTO empleados (nombre,apellido,salario) VALUES ('val1','val2','val3')
-        StringBuilder sql = new StringBuilder("INSERT INTO " + tabla + " (");
+        // ahora tienen coma las columnas y los registros
         for (int i = 0; i < columnas.length; i++) {
-            sql.append(columnas[i]);
+            columna += columnas[i];
             if (i < columnas.length - 1) {
-                sql.append(",");
+                columna += ",";
+            }
+            dato += "('" + dato_registro[i] + "')";
+            if (i < dato_registro.length - 1) {
+                dato += ",";
             }
         }
-        sql.append(") VALUES (");
-        for (int i = 0; i < columnas.length; i++) {
-            // los valores van entre comillas simples para que sqlite los trate como texto
-            sql.append("'").append(valores[i]).append("'");
-            if (i < columnas.length - 1) {
-                sql.append(",");
-            }
-        }
-        sql.append(")");
 
-        // ejecutamos el INSERT con el Statement
+        sql = ("INSERT INTO " + tabla + " (" + columna + ") VALUES (" + dato + ")"); // comando
+        // nos conectamos al sql
         try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
-            stmt.executeUpdate(sql.toString());
+            // ejcutamos el comando de sqlite
+            stmt.executeUpdate(sql);
             JOptionPane.showMessageDialog(null, "Registro añadido correctamente en " + tabla + ".");
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al insertar en " + tabla + ":\n" + e.getMessage(),
@@ -522,22 +521,24 @@ public class Main {
     // metodo de eliminar
     // primero pide el valor de la pk, despues ejecuta el delete y avisa si no existia
     public static void delete(String tabla, String pk) {
-        String del_id = JOptionPane.showInputDialog(null, pk + " a eliminar de " + tabla + ":");
-        // cuando ya se ha eliminado lo devuelve
-        if (del_id == null) {
-            return;
+        String sql = "";
+        String del_pk = JOptionPane.showInputDialog(null, pk + " a eliminar de " + tabla + ":");
+        // construimos el sql con el id directamente incrustado
+        if (tabla.equals("TIPUS_PLACA")) {
+            sql = ("DELETE FROM " + tabla + " WHERE " + pk + " = '" + del_pk + "'");
+        } else {
+            sql = ("DELETE FROM " + tabla + " WHERE " + pk + " = " + del_pk);
         }
 
-        // construimos el sql con el id directamente incrustado
-        String sql = "DELETE FROM " + tabla + " WHERE " + pk + " = " + del_id;
-
+        // hago la conexion a la base de datos
         try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
-            int del_filas = stmt.executeUpdate(sql);
-            if (del_filas > 0) {
+            // ejecuto el comando de sql
+            stmt.executeUpdate(sql);
+            // si no existe la primary key
+            if (del_pk != null) {
                 JOptionPane.showMessageDialog(null, "Registro eliminado correctamente de " + tabla + ".");
-            } else {
-                // executeUpdate devuelve 0 si el ID no existia en la tabla
-                JOptionPane.showMessageDialog(null, "No se encontro ningun registro con " + pk + " " + del_id + " en " + tabla,
+            } else { // si no existe
+                JOptionPane.showMessageDialog(null, "No se encontro ningun registro con " + pk + " " + del_pk + " en " + tabla,
                         "Aviso", JOptionPane.WARNING_MESSAGE);
             }
         } catch (SQLException e) {
@@ -546,88 +547,50 @@ public class Main {
         }
     }
 
-    // metodo de select
-    // hace un SELECT de todas las filas de la tabla y devuelve una lista de arrays
-    // cada array tiene los valores de las columnas que le pasamos
-    public static List<String[]> select(String tabla, String[] columnas) {
+    public static void update(String tabla, String[] columnas, String[] registros) {
 
-        // lista donde guardaremos cada fila como un array de strings
-        List<String[]> lista = new ArrayList<>();
-
-        // construimos el SQL dinamicamente:
-        // para 2 columnas genera: SELECT nombre,apellido FROM empleados
-        StringBuilder sql = new StringBuilder("SELECT ");
-        for (int i = 0; i < columnas.length; i++) {
-            sql.append(columnas[i]);
-            if (i < columnas.length - 1) {
-                sql.append(",");
-            }
-        }
-        sql.append(" FROM ").append(tabla);
-
-        try (Connection con = getConnection(); Statement stmt = con.createStatement(); // executeQuery para SELECT, devuelve un ResultSet con las filas
-                 ResultSet rs = stmt.executeQuery(sql.toString())) {
-
-            // recorremos las filas una a una con rs.next()
-            while (rs.next()) {
-                // por cada fila creamos un array con tantas posiciones como columnas
-                String[] fila = new String[columnas.length];
-                for (int i = 0; i < columnas.length; i++) {
-                    // rs.getString("nombre_columna") saca el valor de esa columna en la fila actual
-                    fila[i] = rs.getString(columnas[i]);
-                }
-                lista.add(fila);
-            }
-        } catch (SQLException e) {
-            System.err.println("Error al hacer select de " + tabla + ": " + e.getMessage());
-        }
-
-        return lista;
     }
 
-    // metodo de actualizar
-    // funciona igual que insertar --> pide los nuevos valores para cada columna,
-    // pide el id del registro a modificar, construye el update y despues lo ejecuta
-    public static void update(String tabla, String[] columna, String[] celda) {
+    // metodo de select
+    public static void select(String tabla, String[] columnas) {
 
-        // pedimos los nuevos valores al usuario
-        String[] valores = new String[columna.length];
-        for (int i = 0; i < celda.length; i++) {
-            valores[i] = JOptionPane.showInputDialog(null, celda[i]);
-            if (valores[i] == null) {
-                return; // usuario cancelo
+        // construimos las columnas: col1,col2,col3
+        String cols = "";
+        for (int i = 0; i < columnas.length; i++) {
+            cols += columnas[i];
+            if (i < columnas.length - 1) {
+                cols += ",";
             }
         }
 
-        // pedimos el id del registro que se quiere modificar
-        String upd_id = JOptionPane.showInputDialog(null, "ID a actualizar de " + tabla + ":");
-        if (upd_id == null) {
-            return; // usuario cancelo
-        }
+        String sql = "SELECT " + cols + " FROM " + tabla;
 
-        // construimos el SQL dinamicamente:
-        // para 3 columnas genera: UPDATE empleados SET nombre='val1',apellido='val2',salario='val3' WHERE id=1
-        StringBuilder sql = new StringBuilder("UPDATE " + tabla + " SET ");
-        for (int i = 0; i < columna.length; i++) {
-            // los valores van entre comillas simples para que sqlite los trate como texto
-            sql.append(columna[i]).append("='").append(valores[i]).append("'");
-            if (i < columna.length - 1) {
-                sql.append(",");
-            }
-        }
-        sql.append(" WHERE id=").append(upd_id);
-
-        // ejecutamos el UPDATE con el Statement
+        // nos conectamos al sql
         try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
-            int upd_celdas = stmt.executeUpdate(sql.toString());
-            if (upd_celdas > 0) {
-                JOptionPane.showMessageDialog(null, "Registro actualizado correctamente en " + tabla + ".");
-            } else {
-                JOptionPane.showMessageDialog(null, "No se encontro ningun registro con ID " + upd_id + " en " + tabla,
-                        "Aviso", JOptionPane.WARNING_MESSAGE);
+            // ejecutamos el comando de sqlite
+            java.sql.ResultSet rs = stmt.executeQuery(sql);
+
+            // recorremos las filas una a una con rs.next()
+            String resultado = "";
+            while (rs.next()) {
+                for (int i = 0; i < columnas.length; i++) {
+                    resultado += columnas[i] + ": " + rs.getString(columnas[i]);
+                    if (i < columnas.length - 1) {
+                        resultado += " | ";
+                    }
+                }
+                resultado += "\n";
             }
+
+            // si no hay filas avisamos al usuario
+            if (resultado.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "No hay registros en " + tabla + ".");
+            } else {
+                JOptionPane.showMessageDialog(null, resultado);
+            }
+
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al actualizar " + tabla + ":\n" + e.getMessage(),
+            JOptionPane.showMessageDialog(null, "Error al hacer select de " + tabla + ":\n" + e.getMessage(),
                     "Error SQL", JOptionPane.ERROR_MESSAGE);
         }
     }
