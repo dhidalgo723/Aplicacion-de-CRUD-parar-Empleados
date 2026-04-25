@@ -548,7 +548,8 @@ public class Main {
     }
 
     public static void update(String tabla, String[] columnas, String[] registros) {
-
+        String cols = "";
+        String sql = ("UPDATE " + cols + " FROM " + tabla);
     }
 
     // metodo de select
@@ -563,7 +564,7 @@ public class Main {
             }
         }
 
-        String sql = "SELECT " + cols + " FROM " + tabla;
+        String sql = ("SELECT " + cols + " FROM " + tabla);
 
         // nos conectamos al sql
         try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
