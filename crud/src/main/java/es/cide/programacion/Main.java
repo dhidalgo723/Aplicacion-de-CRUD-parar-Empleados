@@ -540,6 +540,13 @@ public class Main {
         // añadimos
         frame.add(tabs, BorderLayout.CENTER);
         create();
+
+        // cargamos los datos iniciales de la base de datos en los textfields
+        select("TIPUS_PLACA", cols_tplaza, campos_tplaza_2d, page_tplaza[0], num_filas);
+        select("PLACA", cols_plaza, campos_plaza_2d, page_plaza[0], num_filas);
+        select("EMPLEAT", cols_emp, campos_emp_2d, page_emp[0], num_filas);
+        select("NOMINA", cols_nom, campos_nom_2d, page_nom[0], num_filas);
+
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
