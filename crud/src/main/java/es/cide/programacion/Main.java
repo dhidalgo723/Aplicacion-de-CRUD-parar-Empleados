@@ -196,6 +196,126 @@ public class Main {
                 new String[]{"Nuevo ID empleado:", "Nueva cantidad:", "Nueva fecha (YYYY-MM-DD):"}
         ));
 
+        // botones de pasar y recargar pagina - uno por cada pestaña (un componente solo puede tener un padre)
+        int[] page_tplaza = {0};
+        int[] page_plaza = {0};
+        int[] page_emp = {0};
+        int[] page_nom = {0};
+
+        JButton prev_tplaza = new JButton("⬅️");
+        JButton recharge_tplaza = new JButton("🔁");
+        JButton next_tplaza = new JButton("➡️");
+
+        JButton prev_plaza = new JButton("⬅️");
+        JButton recharge_plaza = new JButton("🔁");
+        JButton next_plaza = new JButton("➡️");
+
+        JButton prev_emp = new JButton("⬅️");
+        JButton recharge_emp = new JButton("🔁");
+        JButton next_emp = new JButton("➡️");
+
+        JButton prev_nom = new JButton("⬅️");
+        JButton recharge_nom = new JButton("🔁");
+        JButton next_nom = new JButton("➡️");
+
+        // 2d arrays y columnas para cada tabla
+        JTextField[][] campos_tplaza_2d = {campos_nom_tplaza, campos_fun_tplaza};
+        String[] cols_tplaza = {"NOM", "FUNCIO"};
+
+        JTextField[][] campos_plaza_2d = {campos_codi_pla, campos_nom_pla, campos_salari_pla, campos_info_pla, campos_codiplaza_pla, campos_nomplaza_pla};
+        String[] cols_plaza = {"CODI", "NOM", "SALARI", "INFORME_SUPERVISIO", "CODI_PLACA_SUPERVISORA", "NOM_TIPUS_PLACA"};
+
+        JTextField[][] campos_emp_2d = {campos_nss_emp, campos_nom_emp, campos_llin_emp, campos_email_emp, campos_iban_emp};
+        String[] cols_emp = {"NSS", "NOM", "LLINATGES", "EMAIL", "IBAN"};
+
+        JTextField[][] campos_nom_2d = {campos_id_nom, campos_nom_nom, campos_fun_nom};
+        String[] cols_nom = {"ID_NOMINA", "IBAN_PAGAMENT", "IMPORT"};
+
+        // listeners de tipos de plaza
+        recharge_tplaza.addActionListener(e -> {
+            page_tplaza[0] = 0;
+            select("TIPUS_PLACA", cols_tplaza, campos_tplaza_2d, page_tplaza[0], num_filas);
+        });
+        next_tplaza.addActionListener(e -> {
+            page_tplaza[0]++;
+            select("TIPUS_PLACA", cols_tplaza, campos_tplaza_2d, page_tplaza[0], num_filas);
+        });
+        prev_tplaza.addActionListener(e -> {
+            if (page_tplaza[0] > 0) {
+                page_tplaza[0]--;
+                select("TIPUS_PLACA", cols_tplaza, campos_tplaza_2d, page_tplaza[0], num_filas);
+            }
+        });
+
+        // listeners de plaza
+        recharge_plaza.addActionListener(e -> {
+            page_plaza[0] = 0;
+            select("PLACA", cols_plaza, campos_plaza_2d, page_plaza[0], num_filas);
+        });
+        next_plaza.addActionListener(e -> {
+            page_plaza[0]++;
+            select("PLACA", cols_plaza, campos_plaza_2d, page_plaza[0], num_filas);
+        });
+        prev_plaza.addActionListener(e -> {
+            if (page_plaza[0] > 0) {
+                page_plaza[0]--;
+                select("PLACA", cols_plaza, campos_plaza_2d, page_plaza[0], num_filas);
+            }
+        });
+
+        // listeners de empleados
+        recharge_emp.addActionListener(e -> {
+            page_emp[0] = 0;
+            select("EMPLEAT", cols_emp, campos_emp_2d, page_emp[0], num_filas);
+        });
+        next_emp.addActionListener(e -> {
+            page_emp[0]++;
+            select("EMPLEAT", cols_emp, campos_emp_2d, page_emp[0], num_filas);
+        });
+        prev_emp.addActionListener(e -> {
+            if (page_emp[0] > 0) {
+                page_emp[0]--;
+                select("EMPLEAT", cols_emp, campos_emp_2d, page_emp[0], num_filas);
+            }
+        });
+
+        // listeners de nominas
+        recharge_nom.addActionListener(e -> {
+            page_nom[0] = 0;
+            select("NOMINA", cols_nom, campos_nom_2d, page_nom[0], num_filas);
+        });
+        next_nom.addActionListener(e -> {
+            page_nom[0]++;
+            select("NOMINA", cols_nom, campos_nom_2d, page_nom[0], num_filas);
+        });
+        prev_nom.addActionListener(e -> {
+            if (page_nom[0] > 0) {
+                page_nom[0]--;
+                select("NOMINA", cols_nom, campos_nom_2d, page_nom[0], num_filas);
+            }
+        });
+
+        // paneles de navegacion
+        JPanel pageset_tplaza = new JPanel();
+        pageset_tplaza.add(prev_tplaza);
+        pageset_tplaza.add(recharge_tplaza);
+        pageset_tplaza.add(next_tplaza);
+
+        JPanel pageset_plaza = new JPanel();
+        pageset_plaza.add(prev_plaza);
+        pageset_plaza.add(recharge_plaza);
+        pageset_plaza.add(next_plaza);
+
+        JPanel pageset_emp = new JPanel();
+        pageset_emp.add(prev_emp);
+        pageset_emp.add(recharge_emp);
+        pageset_emp.add(next_emp);
+
+        JPanel pageset_nom = new JPanel();
+        pageset_nom.add(prev_nom);
+        pageset_nom.add(recharge_nom);
+        pageset_nom.add(next_nom);
+
         // gbc (unico para todos los paneles)
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -236,6 +356,7 @@ public class Main {
         JPanel tiposplaza = new JPanel(new BorderLayout());
         tiposplaza.add(panel_tiposplaza, BorderLayout.NORTH);
         tiposplaza.add(panel_listartplaza, BorderLayout.CENTER);
+        tiposplaza.add(pageset_tplaza, BorderLayout.SOUTH);
         tabs.addTab("Tipos de Plaza", new JScrollPane(tiposplaza));
 
         // gbc plaza
@@ -303,6 +424,7 @@ public class Main {
         JPanel plaza = new JPanel(new BorderLayout());
         plaza.add(panel_botonesplaza, BorderLayout.NORTH);
         plaza.add(panel_listarplaza, BorderLayout.CENTER);
+        plaza.add(pageset_plaza, BorderLayout.SOUTH);
         tabs.addTab("Plazas", new JScrollPane(plaza));
 
         // gbc empleado
@@ -367,6 +489,7 @@ public class Main {
         JPanel empleados = new JPanel(new BorderLayout());
         empleados.add(panel_botonesempleados, BorderLayout.NORTH);
         empleados.add(panel_listarempleados, BorderLayout.CENTER);
+        empleados.add(pageset_emp, BorderLayout.SOUTH);
         tabs.addTab("Empleados", new JScrollPane(empleados));
 
         // gbc nominas
@@ -411,6 +534,7 @@ public class Main {
         JPanel nominas = new JPanel(new BorderLayout());
         nominas.add(panel_botonesnominas, BorderLayout.NORTH);
         nominas.add(panel_listarnominas, BorderLayout.CENTER);
+        nominas.add(pageset_nom, BorderLayout.SOUTH);
         tabs.addTab("Nominas", new JScrollPane(nominas));
 
         // añadimos
@@ -420,6 +544,7 @@ public class Main {
         frame.setVisible(true);
     }
 
+    // crea la base de datos si no esta creada ya
     public static void create() {
         try (Connection con = DriverManager.getConnection(URL); Statement stmt = con.createStatement()) {
             String sql = "CREATE TABLE IF NOT EXISTS TIPUS_PLACA (\r\n"
@@ -549,47 +674,37 @@ public class Main {
 
     public static void update(String tabla, String[] columnas, String[] registros) {
         String cols = "";
-        String sql = ("UPDATE " + cols + " FROM " + tabla);
+        String sql = ("UPDATE " + tabla + "SET " + cols + " = ? WHERE NOM = ?");
     }
 
-    // metodo de select
-    public static void select(String tabla, String[] columnas) {
-
-        // construimos las columnas: col1,col2,col3
-        String cols = "";
-        for (int i = 0; i < columnas.length; i++) {
-            cols += columnas[i];
-            if (i < columnas.length - 1) {
-                cols += ",";
+    // metodo de select: rellena los textfields de la pestaña correspondiente con paginacion
+    public static void select(String tabla, String[] columnas, JTextField[][] campos, int page, int numFilas) {
+        // limpiamos todos los textfields antes de rellenar
+        for (JTextField[] col : campos) {
+            for (JTextField tf : col) {
+                tf.setText("");
+                tf.setEditable(false);
             }
         }
 
-        String sql = ("SELECT " + cols + " FROM " + tabla);
+        String cols = String.join(",", columnas);
+        String sql = "SELECT " + cols + " FROM " + tabla
+                + " ORDER BY " + columnas[0]
+                + " LIMIT " + numFilas + " OFFSET " + (page * numFilas);
 
-        // nos conectamos al sql
         try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
-            // ejecutamos el comando de sqlite
             java.sql.ResultSet rs = stmt.executeQuery(sql);
-
-            // recorremos las filas una a una con rs.next()
-            String resultado = "";
-            while (rs.next()) {
-                for (int i = 0; i < columnas.length; i++) {
-                    resultado += columnas[i] + ": " + rs.getString(columnas[i]);
-                    if (i < columnas.length - 1) {
-                        resultado += " | ";
-                    }
+            int row = 0;
+            while (rs.next() && row < numFilas) {
+                for (int c = 0; c < columnas.length; c++) {
+                    String val = rs.getString(columnas[c]);
+                    campos[c][row].setText(val != null ? val : "");
                 }
-                resultado += "\n";
+                row++;
             }
-
-            // si no hay filas avisamos al usuario
-            if (resultado.isEmpty()) {
+            if (row == 0 && page == 0) {
                 JOptionPane.showMessageDialog(null, "No hay registros en " + tabla + ".");
-            } else {
-                JOptionPane.showMessageDialog(null, resultado);
             }
-
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al hacer select de " + tabla + ":\n" + e.getMessage(),
                     "Error SQL", JOptionPane.ERROR_MESSAGE);
