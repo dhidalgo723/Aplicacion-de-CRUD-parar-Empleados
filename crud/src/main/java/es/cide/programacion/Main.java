@@ -1,6 +1,7 @@
 package es.cide.programacion;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -98,10 +99,10 @@ public class Main {
         JButton remove_plaza = new JButton("Eliminar Plaza");
         JButton update_plaza = new JButton("Actualizar Plaza");
 
-        add_plaza.setPreferredSize(new java.awt.Dimension(add_plaza.getPreferredSize().width, 50));
-        remove_plaza.setPreferredSize(new java.awt.Dimension(remove_plaza.getPreferredSize().width, 50));
+        add_plaza.setPreferredSize(new Dimension(add_plaza.getPreferredSize().width, 50));
+        remove_plaza.setPreferredSize(new Dimension(remove_plaza.getPreferredSize().width, 50));
 
-        update_plaza.setPreferredSize(new java.awt.Dimension(update_plaza.getPreferredSize().width, 50));
+        update_plaza.setPreferredSize(new Dimension(update_plaza.getPreferredSize().width, 50));
 
         // textfield de plazas
         JTextField[] campos_codi_pla = new JTextField[num_filas];
@@ -174,9 +175,9 @@ public class Main {
         JButton remove_nomina = new JButton("Eliminar Nomina");
         JButton update_nomina = new JButton("Actualizar Nomina");
 
-        add_nomina.setPreferredSize(new java.awt.Dimension(add_nomina.getPreferredSize().width, 50));
-        remove_nomina.setPreferredSize(new java.awt.Dimension(remove_nomina.getPreferredSize().width, 50));
-        update_nomina.setPreferredSize(new java.awt.Dimension(update_nomina.getPreferredSize().width, 50));
+        add_nomina.setPreferredSize(new Dimension(add_nomina.getPreferredSize().width, 50));
+        remove_nomina.setPreferredSize(new Dimension(remove_nomina.getPreferredSize().width, 50));
+        update_nomina.setPreferredSize(new Dimension(update_nomina.getPreferredSize().width, 50));
 
         // textfields de nominas
         JTextField[] campos_id_nom = new JTextField[num_filas];
