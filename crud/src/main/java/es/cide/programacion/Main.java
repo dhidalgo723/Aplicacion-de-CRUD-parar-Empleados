@@ -1,6 +1,7 @@
 package es.cide.programacion;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -62,9 +63,9 @@ public class Main {
         JButton remove_tiposplaza = new JButton("Eliminar Tipo de Plaza");
         JButton update_tiposplaza = new JButton("Actualizar Tipo de Plaza");
 
-        add_tiposplaza.setPreferredSize(new java.awt.Dimension(add_tiposplaza.getPreferredSize().width, 50));
-        remove_tiposplaza.setPreferredSize(new java.awt.Dimension(remove_tiposplaza.getPreferredSize().width, 50));
-        update_tiposplaza.setPreferredSize(new java.awt.Dimension(update_tiposplaza.getPreferredSize().width, 50));
+        add_tiposplaza.setPreferredSize(new Dimension(add_tiposplaza.getPreferredSize().width, 50));
+        remove_tiposplaza.setPreferredSize(new Dimension(remove_tiposplaza.getPreferredSize().width, 50));
+        update_tiposplaza.setPreferredSize(new Dimension(update_tiposplaza.getPreferredSize().width, 50));
 
         // guardo los textfields en un array para leerlos despues
         int num_filas = 6;
@@ -98,10 +99,9 @@ public class Main {
         JButton remove_plaza = new JButton("Eliminar Plaza");
         JButton update_plaza = new JButton("Actualizar Plaza");
 
-        add_plaza.setPreferredSize(new java.awt.Dimension(add_plaza.getPreferredSize().width, 50));
-        remove_plaza.setPreferredSize(new java.awt.Dimension(remove_plaza.getPreferredSize().width, 50));
-
-        update_plaza.setPreferredSize(new java.awt.Dimension(update_plaza.getPreferredSize().width, 50));
+        add_plaza.setPreferredSize(new Dimension(add_plaza.getPreferredSize().width, 50));
+        remove_plaza.setPreferredSize(new Dimension(remove_plaza.getPreferredSize().width, 50));
+        update_plaza.setPreferredSize(new Dimension(update_plaza.getPreferredSize().width, 50));
 
         // textfield de plazas
         JTextField[] campos_codi_pla = new JTextField[num_filas];
@@ -114,14 +114,14 @@ public class Main {
         // listeners de plazas
         add_plaza.addActionListener(e -> insertar(
                 "PLACA",
-                new String[]{"nombre", "descripcion"},
-                new String[]{"Nombre de la plaza:", "Descripcion de la plaza:"}
+                new String[]{"CODI", "NOM", "SALARI", "INFO", "CODI_PLAZA", "NOM_PLAZA"},
+                new String[]{"Código de la plaza:", "Nombre de la plaza:", "Salario de la plaza:", "Información de la plaza:", "Código de la plaza:", "Nombre de la plaza:"}
         ));
         remove_plaza.addActionListener(e -> delete("PLACA", "CODI"));
         update_plaza.addActionListener(e -> update(
                 "PLACA",
-                new String[]{"nombre", "descripcion"},
-                new String[]{"Nuevo nombre:", "Nueva descripcion:"}
+                new String[]{"CODI", "NOM", "SALARI", "INFO", "CODI_PLAZA", "NOM_PLAZA"},
+                new String[]{"Nuevo código:", "Nuevo nombre:", "Nuevo salario:", "Nueva información:", "Nuevo código de plaza:", "Nuevo nombre de plaza:"}
         ));
 
         // pestaña empleados
@@ -138,9 +138,9 @@ public class Main {
         JButton remove_empleado = new JButton("Eliminar Empleado");
         JButton update_empleado = new JButton("Actualizar Empleado");
 
-        add_empleado.setPreferredSize(new java.awt.Dimension(add_empleado.getPreferredSize().width, 50));
-        remove_empleado.setPreferredSize(new java.awt.Dimension(remove_empleado.getPreferredSize().width, 50));
-        update_empleado.setPreferredSize(new java.awt.Dimension(update_empleado.getPreferredSize().width, 50));
+        add_empleado.setPreferredSize(new Dimension(add_empleado.getPreferredSize().width, 50));
+        remove_empleado.setPreferredSize(new Dimension(remove_empleado.getPreferredSize().width, 50));
+        update_empleado.setPreferredSize(new Dimension(update_empleado.getPreferredSize().width, 50));
 
         JTextField[] campos_nss_emp = new JTextField[num_filas];
         JTextField[] campos_nom_emp = new JTextField[num_filas];
@@ -151,14 +151,14 @@ public class Main {
         // listeners de empleados
         add_empleado.addActionListener(e -> insertar(
                 "EMPLEAT",
-                new String[]{"nombre", "descripcion"},
-                new String[]{"Nombre del empleado:", "Descripcion del empleado:"}
+                new String[]{"NSS", "NOM", "LLINATGES", "EMAIL", "IBAN"},
+                new String[]{"NSS del empleado:", "Nombre del empleado:", "Apellidos del empleado:", "Email del empleado:", "IBAN del empleado:"}
         ));
         remove_empleado.addActionListener(e -> delete("EMPLEAT", "NSS"));
         update_empleado.addActionListener(e -> update(
                 "EMPLEAT",
-                new String[]{"nombre", "descripcion"},
-                new String[]{"Nuevo nombre:", "Nueva descripcion:"}
+                new String[]{"NSS", "NOM", "LLINATGES", "EMAIL", "IBAN"},
+                new String[]{"Nuevo NSS:", "Nuevo nombre:", "Nuevos apellidos:", "Nuevo email:", "Nuevo IBAN:"}
         ));
 
         // pestaña de nominas
@@ -174,9 +174,9 @@ public class Main {
         JButton remove_nomina = new JButton("Eliminar Nomina");
         JButton update_nomina = new JButton("Actualizar Nomina");
 
-        add_nomina.setPreferredSize(new java.awt.Dimension(add_nomina.getPreferredSize().width, 50));
-        remove_nomina.setPreferredSize(new java.awt.Dimension(remove_nomina.getPreferredSize().width, 50));
-        update_nomina.setPreferredSize(new java.awt.Dimension(update_nomina.getPreferredSize().width, 50));
+        add_nomina.setPreferredSize(new Dimension(add_nomina.getPreferredSize().width, 50));
+        remove_nomina.setPreferredSize(new Dimension(remove_nomina.getPreferredSize().width, 50));
+        update_nomina.setPreferredSize(new Dimension(update_nomina.getPreferredSize().width, 50));
 
         // textfields de nominas
         JTextField[] campos_id_nom = new JTextField[num_filas];
@@ -186,14 +186,14 @@ public class Main {
         // listeners de nominas
         add_nomina.addActionListener(e -> insertar(
                 "NOMINA",
-                new String[]{"empleado_id", "cantidad", "fecha"},
-                new String[]{"ID del empleado:", "Cantidad de la nomina:", "Fecha (YYYY-MM-DD):"}
+                new String[]{"ID_NOMINA", "IBAN_PAGAMENT", "fecha"},
+                new String[]{"Nuevo ID nomina:", "Nuevo IBAN de pago:", "Nueva fecha (YYYY-MM-DD):"}
         ));
         remove_nomina.addActionListener(e -> delete("NOMINA", "ID_NOMINA"));
         update_nomina.addActionListener(e -> update(
                 "NOMINA",
-                new String[]{"empleado_id", "cantidad", "fecha"},
-                new String[]{"Nuevo ID empleado:", "Nueva cantidad:", "Nueva fecha (YYYY-MM-DD):"}
+                new String[]{"ID_NOMINA", "IBAN_PAGAMENT", "fecha"},
+                new String[]{"Nuevo ID nomina:", "Nuevo IBAN de pago:", "Nueva fecha (YYYY-MM-DD):"}
         ));
 
         // botones de pasar y recargar pagina - uno por cada pestaña (un componente solo puede tener un padre)
@@ -708,9 +708,6 @@ public class Main {
                     campos[c][row].setText(val != null ? val : "");
                 }
                 row++;
-            }
-            if (row == 0 && page == 0) {
-                JOptionPane.showMessageDialog(null, "No hay registros en " + tabla + ".");
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al hacer select de " + tabla + ":\n" + e.getMessage(),
