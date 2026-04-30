@@ -34,6 +34,12 @@ public class Main {
 
     public static void main(String[] args) {
 
+        BD bd = new BD();
+        TPlaza tplazaobj = new TPlaza();
+        Nomina nominaobj = new Nomina();
+        Empleados empleadosobj = new Empleados();
+        Plaza plazaobj = new Plaza();
+
         // look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -539,7 +545,7 @@ public class Main {
 
         // añadimos
         frame.add(tabs, BorderLayout.CENTER);
-        create();
+        bd.create();
 
         // cargamos los datos iniciales de la base de datos en los textfields
         select("TIPUS_PLACA", cols_tplaza, campos_tplaza_2d, page_tplaza[0], num_filas);
@@ -549,58 +555,6 @@ public class Main {
 
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-    }
-
-    // crea la base de datos si no esta creada ya
-    public static void create() {
-        try (Connection con = DriverManager.getConnection(URL); Statement stmt = con.createStatement()) {
-            String sql = "CREATE TABLE IF NOT EXISTS TIPUS_PLACA (\r\n"
-                    + "    NOM VARCHAR(25) PRIMARY KEY,\r\n"
-                    + "    FUNCIO VARCHAR(200) NOT NULL\r\n"
-                    + ");\r\n";
-            stmt.executeUpdate(sql);
-            sql = "CREATE TABLE IF NOT EXISTS PLACA (\r\n"
-                    + "    CODI INTEGER PRIMARY KEY AUTOINCREMENT,\r\n"
-                    + "    NOM VARCHAR(25) NOT NULL,\r\n"
-                    + "    SALARI INTEGER NOT NULL,\r\n"
-                    + "    INFORME_SUPERVISIO VARCHAR(100),\r\n"
-                    + "    CODI_PLACA_SUPERVISORA INTEGER,\r\n"
-                    + "    NOM_TIPUS_PLACA VARCHAR(25) NOT NULL,\r\n"
-                    + "    FOREIGN KEY (CODI_PLACA_SUPERVISORA) REFERENCES PLACA (CODI),\r\n"
-                    + "    FOREIGN KEY (NOM_TIPUS_PLACA) REFERENCES TIPUS_PLACA (NOM)\r\n"
-                    + ");\r\n";
-            stmt.executeUpdate(sql);
-            sql = "CREATE TABLE IF NOT EXISTS EMPLEAT (\r\n"
-                    + "    NSS INTEGER PRIMARY KEY,\r\n"
-                    + "    NOM VARCHAR(25) NOT NULL,\r\n"
-                    + "    LLINATGES VARCHAR(25) NOT NULL,\r\n"
-                    + "    EMAIL VARCHAR(25),\r\n"
-                    + "    IBAN VARCHAR(25) UNIQUE NOT NULL CHECK (IBAN LIKE 'ES%')\r\n"
-                    + ");";
-            stmt.executeUpdate(sql);
-            sql = "CREATE TABLE IF NOT EXISTS OCUPA (\r\n"
-                    + "    NSS_EMPLEAT INTEGER NOT NULL,\r\n"
-                    + "    CODI_PLACA INTEGER NOT NULL,\r\n"
-                    + "    DATA_INICI VARCHAR(20) NOT NULL,\r\n"
-                    + "    DATA_FI VARCHAR(20),\r\n"
-                    + "    PRIMARY KEY (NSS_EMPLEAT, CODI_PLACA),\r\n"
-                    + "    FOREIGN KEY (NSS_EMPLEAT) REFERENCES EMPLEAT (NSS),\r\n"
-                    + "    FOREIGN KEY (CODI_PLACA) REFERENCES PLACA (CODI)\r\n"
-                    + ");\r\n";
-            stmt.executeUpdate(sql);
-            sql = "CREATE TABLE IF NOT EXISTS NOMINA (\r\n"
-                    + "    ID_NOMINA INTEGER PRIMARY KEY AUTOINCREMENT,\r\n"
-                    + "    IBAN_PAGAMENT VARCHAR(25) NOT NULL,\r\n"
-                    + "    IMPORT REAL NOT NULL,\r\n"
-                    + "    NSS_EMPLEAT INTEGER NOT NULL,\r\n"
-                    + "    CODI_PLACA INTEGER NOT NULL,\r\n"
-                    + "    FOREIGN KEY (NSS_EMPLEAT) REFERENCES EMPLEAT (NSS),\r\n"
-                    + "    FOREIGN KEY (CODI_PLACA) REFERENCES PLACA (CODI)\r\n"
-                    + ");";
-            stmt.executeUpdate(sql);
-        } catch (SQLException e) {
-            System.err.println("Error: " + e.getMessage());
-        }
     }
 
     // metodo de insertar
