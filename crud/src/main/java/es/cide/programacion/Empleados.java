@@ -19,14 +19,48 @@ public class Empleados extends BD {
     }
 
     private String tabla = "EMPLEAT";
-    private String[] columnas = {"DNI", "NOMBRE", "APELLIDOS", "DIRECCION", "TELEFONO", "SALARIO"};
-    private String[] registros = {"DNI", "Nombre", "Apellidos", "Dirección", "Teléfono", "Salario"};
+    private String[] columnas = {"NSS", "NOM", "LLINATGES", "EMAIL", "IBAN"};
+    private String[] registros = {"NSS del empleado:", "Nombre del empleado:", "Apellidos del empleado:", "Email del empleado:", "IBAN del empleado:"};
+    private String pk = "NSS";
 
     public Empleados(String tabla, String[] columnas, String[] registros) {
         super(tabla, columnas, registros);
         this.tabla = tabla;
         this.columnas = columnas;
         this.registros = registros;
+    }
+
+    public Empleados() {
+
+    }
+
+    public String getTabla() { return tabla; }
+    public void setTabla(String tabla) { this.tabla = tabla; }
+
+    public String[] getColumnas() { return columnas; }
+    public void setColumnas(String[] columnas) { this.columnas = columnas; }
+
+    public String[] getRegistros() { return registros; }
+    public void setRegistros(String[] registros) { this.registros = registros; }
+
+    public String getPk() { return pk; }
+    public void setPk(String pk) { this.pk = pk; }
+
+    public void insertar() {
+        BD.insertar(tabla, columnas, registros);
+    }
+
+    public void delete() {
+        BD.delete(tabla, pk);
+    }
+
+    @Override
+    public void update() {
+
+    }
+
+    public void select(JTextField[][] campos, int page, int numFilas) {
+        BD.select(tabla, columnas, campos, page, numFilas);
     }
 
     // metodo de insertar

@@ -28,6 +28,19 @@ public class BD {
         this.registros = registros;
     }
 
+    public BD() {
+
+    }
+
+    public String getTabla() { return tabla; }
+    public void setTabla(String tabla) { this.tabla = tabla; }
+
+    public String[] getColumnas() { return columnas; }
+    public void setColumnas(String[] columnas) { this.columnas = columnas; }
+
+    public String[] getRegistros() { return registros; }
+    public void setRegistros(String[] registros) { this.registros = registros; }
+
     // crea la base de datos si no esta creada ya
     public static void create() {
         try (Connection con = DriverManager.getConnection(URL); Statement stmt = con.createStatement()) {

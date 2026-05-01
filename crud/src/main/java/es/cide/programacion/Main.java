@@ -24,6 +24,10 @@ import javax.swing.WindowConstants;
 
 public class Main {
 
+    String tabla = "";
+    String[] columnas = {"", ""};
+    String[] registros = {"", ""};
+
     // variables para la base de datos
     private static final String URL = "jdbc:sqlite:MakuPlazas.db";
 
@@ -32,6 +36,7 @@ public class Main {
         return DriverManager.getConnection(URL);
     }
 
+    // maku
     public static void main(String[] args) {
 
         BD bd = new BD();
@@ -79,17 +84,9 @@ public class Main {
         JTextField[] campos_fun_tplaza = new JTextField[num_filas];
 
         // listeners de tipos de plaza
-        add_tiposplaza.addActionListener(e -> insertar(
-                "TIPUS_PLACA",
-                new String[]{"NOM", "FUNCIO"},
-                new String[]{"Nombre del tipo de plaza:", "Descripcion del tipo de plaza:"}
-        ));
-        remove_tiposplaza.addActionListener(e -> delete("TIPUS_PLACA", "NOM"));
-        update_tiposplaza.addActionListener(e -> update(
-                "TIPUS_PLACA",
-                new String[]{"NOM", "FUNCIO"},
-                new String[]{"Nuevo nombre:", "Nueva descripcion:"}
-        ));
+        add_tiposplaza.addActionListener(e -> tplazaobj.insertar());
+        remove_tiposplaza.addActionListener(e -> tplazaobj.delete());
+        update_tiposplaza.addActionListener(e -> tplazaobj.update());
 
         // pestaña de plaza
         JPanel panel_plaza = new JPanel(new GridBagLayout());
@@ -118,17 +115,9 @@ public class Main {
         JTextField[] campos_nomplaza_pla = new JTextField[num_filas];
 
         // listeners de plazas
-        add_plaza.addActionListener(e -> insertar(
-                "PLACA",
-                new String[]{"CODI", "NOM", "SALARI", "INFO", "CODI_PLAZA", "NOM_PLAZA"},
-                new String[]{"Código de la plaza:", "Nombre de la plaza:", "Salario de la plaza:", "Información de la plaza:", "Código de la plaza:", "Nombre de la plaza:"}
-        ));
-        remove_plaza.addActionListener(e -> delete("PLACA", "CODI"));
-        update_plaza.addActionListener(e -> update(
-                "PLACA",
-                new String[]{"CODI", "NOM", "SALARI", "INFO", "CODI_PLAZA", "NOM_PLAZA"},
-                new String[]{"Nuevo código:", "Nuevo nombre:", "Nuevo salario:", "Nueva información:", "Nuevo código de plaza:", "Nuevo nombre de plaza:"}
-        ));
+        add_plaza.addActionListener(e -> plazaobj.insertar());
+        remove_plaza.addActionListener(e -> plazaobj.delete());
+        update_plaza.addActionListener(e -> plazaobj.update());
 
         // pestaña empleados
         JPanel panel_empleados = new JPanel(new GridBagLayout());
@@ -155,17 +144,9 @@ public class Main {
         JTextField[] campos_iban_emp = new JTextField[num_filas];
 
         // listeners de empleados
-        add_empleado.addActionListener(e -> insertar(
-                "EMPLEAT",
-                new String[]{"NSS", "NOM", "LLINATGES", "EMAIL", "IBAN"},
-                new String[]{"NSS del empleado:", "Nombre del empleado:", "Apellidos del empleado:", "Email del empleado:", "IBAN del empleado:"}
-        ));
-        remove_empleado.addActionListener(e -> delete("EMPLEAT", "NSS"));
-        update_empleado.addActionListener(e -> update(
-                "EMPLEAT",
-                new String[]{"NSS", "NOM", "LLINATGES", "EMAIL", "IBAN"},
-                new String[]{"Nuevo NSS:", "Nuevo nombre:", "Nuevos apellidos:", "Nuevo email:", "Nuevo IBAN:"}
-        ));
+        add_empleado.addActionListener(e -> empleadosobj.insertar());
+        remove_empleado.addActionListener(e -> empleadosobj.delete());
+        update_empleado.addActionListener(e -> empleadosobj.update());
 
         // pestaña de nominas
         JPanel panel_nominas = new JPanel(new GridBagLayout());
@@ -190,17 +171,9 @@ public class Main {
         JTextField[] campos_fun_nom = new JTextField[num_filas];
 
         // listeners de nominas
-        add_nomina.addActionListener(e -> insertar(
-                "NOMINA",
-                new String[]{"ID_NOMINA", "IBAN_PAGAMENT", "fecha"},
-                new String[]{"Nuevo ID nomina:", "Nuevo IBAN de pago:", "Nueva fecha (YYYY-MM-DD):"}
-        ));
-        remove_nomina.addActionListener(e -> delete("NOMINA", "ID_NOMINA"));
-        update_nomina.addActionListener(e -> update(
-                "NOMINA",
-                new String[]{"ID_NOMINA", "IBAN_PAGAMENT", "fecha"},
-                new String[]{"Nuevo ID nomina:", "Nuevo IBAN de pago:", "Nueva fecha (YYYY-MM-DD):"}
-        ));
+        add_nomina.addActionListener(e -> nominaobj.insertar());
+        remove_nomina.addActionListener(e -> nominaobj.delete());
+        update_nomina.addActionListener(e -> nominaobj.update());
 
         // botones de pasar y recargar pagina - uno por cada pestaña (un componente solo puede tener un padre)
         int[] page_tplaza = {0};
@@ -240,64 +213,64 @@ public class Main {
         // listeners de tipos de plaza
         recharge_tplaza.addActionListener(e -> {
             page_tplaza[0] = 0;
-            select("TIPUS_PLACA", cols_tplaza, campos_tplaza_2d, page_tplaza[0], num_filas);
+            tplazaobj.select(campos_tplaza_2d, page_tplaza[0], num_filas);
         });
         next_tplaza.addActionListener(e -> {
             page_tplaza[0]++;
-            select("TIPUS_PLACA", cols_tplaza, campos_tplaza_2d, page_tplaza[0], num_filas);
+            tplazaobj.select(campos_tplaza_2d, page_tplaza[0], num_filas);
         });
         prev_tplaza.addActionListener(e -> {
             if (page_tplaza[0] > 0) {
                 page_tplaza[0]--;
-                select("TIPUS_PLACA", cols_tplaza, campos_tplaza_2d, page_tplaza[0], num_filas);
+                tplazaobj.select(campos_tplaza_2d, page_tplaza[0], num_filas);
             }
         });
 
         // listeners de plaza
         recharge_plaza.addActionListener(e -> {
             page_plaza[0] = 0;
-            select("PLACA", cols_plaza, campos_plaza_2d, page_plaza[0], num_filas);
+            plazaobj.select(campos_plaza_2d, page_plaza[0], num_filas);
         });
         next_plaza.addActionListener(e -> {
             page_plaza[0]++;
-            select("PLACA", cols_plaza, campos_plaza_2d, page_plaza[0], num_filas);
+            plazaobj.select(campos_plaza_2d, page_plaza[0], num_filas);
         });
         prev_plaza.addActionListener(e -> {
             if (page_plaza[0] > 0) {
                 page_plaza[0]--;
-                select("PLACA", cols_plaza, campos_plaza_2d, page_plaza[0], num_filas);
+                plazaobj.select(campos_plaza_2d, page_plaza[0], num_filas);
             }
         });
 
         // listeners de empleados
         recharge_emp.addActionListener(e -> {
             page_emp[0] = 0;
-            select("EMPLEAT", cols_emp, campos_emp_2d, page_emp[0], num_filas);
+            empleadosobj.select(campos_emp_2d, page_emp[0], num_filas);
         });
         next_emp.addActionListener(e -> {
             page_emp[0]++;
-            select("EMPLEAT", cols_emp, campos_emp_2d, page_emp[0], num_filas);
+            empleadosobj.select(campos_emp_2d, page_emp[0], num_filas);
         });
         prev_emp.addActionListener(e -> {
             if (page_emp[0] > 0) {
                 page_emp[0]--;
-                select("EMPLEAT", cols_emp, campos_emp_2d, page_emp[0], num_filas);
+                empleadosobj.select(campos_emp_2d, page_emp[0], num_filas);
             }
         });
 
         // listeners de nominas
         recharge_nom.addActionListener(e -> {
             page_nom[0] = 0;
-            select("NOMINA", cols_nom, campos_nom_2d, page_nom[0], num_filas);
+            nominaobj.select(campos_nom_2d, page_nom[0], num_filas);
         });
         next_nom.addActionListener(e -> {
             page_nom[0]++;
-            select("NOMINA", cols_nom, campos_nom_2d, page_nom[0], num_filas);
+            nominaobj.select(campos_nom_2d, page_nom[0], num_filas);
         });
         prev_nom.addActionListener(e -> {
             if (page_nom[0] > 0) {
                 page_nom[0]--;
-                select("NOMINA", cols_nom, campos_nom_2d, page_nom[0], num_filas);
+                nominaobj.select(campos_nom_2d, page_nom[0], num_filas);
             }
         });
 
@@ -548,10 +521,10 @@ public class Main {
         bd.create();
 
         // cargamos los datos iniciales de la base de datos en los textfields
-        select("TIPUS_PLACA", cols_tplaza, campos_tplaza_2d, page_tplaza[0], num_filas);
-        select("PLACA", cols_plaza, campos_plaza_2d, page_plaza[0], num_filas);
-        select("EMPLEAT", cols_emp, campos_emp_2d, page_emp[0], num_filas);
-        select("NOMINA", cols_nom, campos_nom_2d, page_nom[0], num_filas);
+        tplazaobj.select(campos_tplaza_2d, page_tplaza[0], num_filas);
+        plazaobj.select(campos_plaza_2d, page_plaza[0], num_filas);
+        empleadosobj.select(campos_emp_2d, page_emp[0], num_filas);
+        nominaobj.select(campos_nom_2d, page_nom[0], num_filas);
 
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
