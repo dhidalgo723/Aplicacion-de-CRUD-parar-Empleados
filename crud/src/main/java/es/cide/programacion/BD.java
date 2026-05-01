@@ -173,6 +173,10 @@ public class BD {
 
     }
 
+    public void select(JTextField[][] campos, int page, int numFilas) {
+        select(tabla, columnas, campos, page, numFilas);
+    }
+
     // metodo de select: rellena los textfields de la pestaña correspondiente con paginacion
     public static void select(String tabla, String[] columnas, JTextField[][] campos, int page, int numFilas) {
         // limpiamos todos los textfields antes de rellenar
