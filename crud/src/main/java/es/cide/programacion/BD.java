@@ -28,6 +28,19 @@ public class BD {
         this.registros = registros;
     }
 
+    public BD() {
+
+    }
+
+    public String getTabla() { return tabla; }
+    public void setTabla(String tabla) { this.tabla = tabla; }
+
+    public String[] getColumnas() { return columnas; }
+    public void setColumnas(String[] columnas) { this.columnas = columnas; }
+
+    public String[] getRegistros() { return registros; }
+    public void setRegistros(String[] registros) { this.registros = registros; }
+
     // crea la base de datos si no esta creada ya
     public static void create() {
         try (Connection con = DriverManager.getConnection(URL); Statement stmt = con.createStatement()) {
@@ -158,6 +171,10 @@ public class BD {
 
     public void update() {
 
+    }
+
+    public void select(JTextField[][] campos, int page, int numFilas) {
+        select(tabla, columnas, campos, page, numFilas);
     }
 
     // metodo de select: rellena los textfields de la pestaña correspondiente con paginacion

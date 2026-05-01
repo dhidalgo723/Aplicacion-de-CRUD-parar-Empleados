@@ -1,3 +1,4 @@
+// makush
 package es.cide.programacion;
 
 import java.awt.BorderLayout;
@@ -5,16 +6,11 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -24,21 +20,41 @@ import javax.swing.WindowConstants;
 
 public class Main {
 
-    // variables para la base de datos
-    private static final String URL = "jdbc:sqlite:MakuPlazas.db";
+    // objetos de cada tabla
+    static BD bd = new BD();
+    static TPlaza tplazaobj = new TPlaza();
+    static Nomina nominaobj = new Nomina();
+    static Empleados empleadosobj = new Empleados();
+    static Plaza plazaobj = new Plaza();
 
-    // para tener la conexion en la base de datos
-    private static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL);
-    }
+    // numero de filas en la lista
+    static int num_filas = 6;
 
     public static void main(String[] args) {
 
-        BD bd = new BD();
-        TPlaza tplazaobj = new TPlaza();
-        Nomina nominaobj = new Nomina();
-        Empleados empleadosobj = new Empleados();
-        Plaza plazaobj = new Plaza();
+        // configurar tipos de plaza con setters
+        tplazaobj.setTabla("TIPUS_PLACA");
+        tplazaobj.setColumnas(new String[]{"NOM", "FUNCIO"});
+        tplazaobj.setRegistros(new String[]{"Nombre del tipo de plaza:", "Descripcion del tipo de plaza:"});
+        tplazaobj.setPk("NOM");
+
+        // configurar plazas con setters
+        plazaobj.setTabla("PLACA");
+        plazaobj.setColumnas(new String[]{"CODI", "NOM", "SALARI", "INFORME_SUPERVISIO", "CODI_PLACA_SUPERVISORA", "NOM_TIPUS_PLACA"});
+        plazaobj.setRegistros(new String[]{"Código de la plaza:", "Nombre de la plaza:", "Salario de la plaza:", "Información de la plaza:", "Código de la plaza supervisora:", "Tipo de plaza:"});
+        plazaobj.setPk("CODI");
+
+        // configurar empleados con setters
+        empleadosobj.setTabla("EMPLEAT");
+        empleadosobj.setColumnas(new String[]{"NSS", "NOM", "LLINATGES", "EMAIL", "IBAN"});
+        empleadosobj.setRegistros(new String[]{"NSS del empleado:", "Nombre del empleado:", "Apellidos del empleado:", "Email del empleado:", "IBAN del empleado:"});
+        empleadosobj.setPk("NSS");
+
+        // configurar nominas con setters
+        nominaobj.setTabla("NOMINA");
+        nominaobj.setColumnas(new String[]{"ID_NOMINA", "IBAN_PAGAMENT", "IMPORT", "NSS_EMPLEAT", "CODI_PLACA"});
+        nominaobj.setRegistros(new String[]{"ID de la nómina", "IBAN de pago", "Importe", "NSS del empleado", "Código de la plaza"});
+        nominaobj.setPk("ID_NOMINA");
 
         // look and feel
         try {
@@ -74,22 +90,13 @@ public class Main {
         update_tiposplaza.setPreferredSize(new Dimension(update_tiposplaza.getPreferredSize().width, 50));
 
         // guardo los textfields en un array para leerlos despues
-        int num_filas = 6;
         JTextField[] campos_nom_tplaza = new JTextField[num_filas];
         JTextField[] campos_fun_tplaza = new JTextField[num_filas];
 
         // listeners de tipos de plaza
-        add_tiposplaza.addActionListener(e -> insertar(
-                "TIPUS_PLACA",
-                new String[]{"NOM", "FUNCIO"},
-                new String[]{"Nombre del tipo de plaza:", "Descripcion del tipo de plaza:"}
-        ));
-        remove_tiposplaza.addActionListener(e -> delete("TIPUS_PLACA", "NOM"));
-        update_tiposplaza.addActionListener(e -> update(
-                "TIPUS_PLACA",
-                new String[]{"NOM", "FUNCIO"},
-                new String[]{"Nuevo nombre:", "Nueva descripcion:"}
-        ));
+        add_tiposplaza.addActionListener(e -> tplazaobj.insertar());
+        remove_tiposplaza.addActionListener(e -> tplazaobj.delete());
+        update_tiposplaza.addActionListener(e -> tplazaobj.update());
 
         // pestaña de plaza
         JPanel panel_plaza = new JPanel(new GridBagLayout());
@@ -118,17 +125,9 @@ public class Main {
         JTextField[] campos_nomplaza_pla = new JTextField[num_filas];
 
         // listeners de plazas
-        add_plaza.addActionListener(e -> insertar(
-                "PLACA",
-                new String[]{"CODI", "NOM", "SALARI", "INFO", "CODI_PLAZA", "NOM_PLAZA"},
-                new String[]{"Código de la plaza:", "Nombre de la plaza:", "Salario de la plaza:", "Información de la plaza:", "Código de la plaza:", "Nombre de la plaza:"}
-        ));
-        remove_plaza.addActionListener(e -> delete("PLACA", "CODI"));
-        update_plaza.addActionListener(e -> update(
-                "PLACA",
-                new String[]{"CODI", "NOM", "SALARI", "INFO", "CODI_PLAZA", "NOM_PLAZA"},
-                new String[]{"Nuevo código:", "Nuevo nombre:", "Nuevo salario:", "Nueva información:", "Nuevo código de plaza:", "Nuevo nombre de plaza:"}
-        ));
+        add_plaza.addActionListener(e -> plazaobj.insertar());
+        remove_plaza.addActionListener(e -> plazaobj.delete());
+        update_plaza.addActionListener(e -> plazaobj.update());
 
         // pestaña empleados
         JPanel panel_empleados = new JPanel(new GridBagLayout());
@@ -155,17 +154,9 @@ public class Main {
         JTextField[] campos_iban_emp = new JTextField[num_filas];
 
         // listeners de empleados
-        add_empleado.addActionListener(e -> insertar(
-                "EMPLEAT",
-                new String[]{"NSS", "NOM", "LLINATGES", "EMAIL", "IBAN"},
-                new String[]{"NSS del empleado:", "Nombre del empleado:", "Apellidos del empleado:", "Email del empleado:", "IBAN del empleado:"}
-        ));
-        remove_empleado.addActionListener(e -> delete("EMPLEAT", "NSS"));
-        update_empleado.addActionListener(e -> update(
-                "EMPLEAT",
-                new String[]{"NSS", "NOM", "LLINATGES", "EMAIL", "IBAN"},
-                new String[]{"Nuevo NSS:", "Nuevo nombre:", "Nuevos apellidos:", "Nuevo email:", "Nuevo IBAN:"}
-        ));
+        add_empleado.addActionListener(e -> empleadosobj.insertar());
+        remove_empleado.addActionListener(e -> empleadosobj.delete());
+        update_empleado.addActionListener(e -> empleadosobj.update());
 
         // pestaña de nominas
         JPanel panel_nominas = new JPanel(new GridBagLayout());
@@ -190,17 +181,9 @@ public class Main {
         JTextField[] campos_fun_nom = new JTextField[num_filas];
 
         // listeners de nominas
-        add_nomina.addActionListener(e -> insertar(
-                "NOMINA",
-                new String[]{"ID_NOMINA", "IBAN_PAGAMENT", "fecha"},
-                new String[]{"Nuevo ID nomina:", "Nuevo IBAN de pago:", "Nueva fecha (YYYY-MM-DD):"}
-        ));
-        remove_nomina.addActionListener(e -> delete("NOMINA", "ID_NOMINA"));
-        update_nomina.addActionListener(e -> update(
-                "NOMINA",
-                new String[]{"ID_NOMINA", "IBAN_PAGAMENT", "fecha"},
-                new String[]{"Nuevo ID nomina:", "Nuevo IBAN de pago:", "Nueva fecha (YYYY-MM-DD):"}
-        ));
+        add_nomina.addActionListener(e -> nominaobj.insertar());
+        remove_nomina.addActionListener(e -> nominaobj.delete());
+        update_nomina.addActionListener(e -> nominaobj.update());
 
         // botones de pasar y recargar pagina - uno por cada pestaña (un componente solo puede tener un padre)
         int[] page_tplaza = {0};
@@ -240,64 +223,64 @@ public class Main {
         // listeners de tipos de plaza
         recharge_tplaza.addActionListener(e -> {
             page_tplaza[0] = 0;
-            select("TIPUS_PLACA", cols_tplaza, campos_tplaza_2d, page_tplaza[0], num_filas);
+            tplazaobj.select(campos_tplaza_2d, page_tplaza[0], num_filas);
         });
         next_tplaza.addActionListener(e -> {
             page_tplaza[0]++;
-            select("TIPUS_PLACA", cols_tplaza, campos_tplaza_2d, page_tplaza[0], num_filas);
+            tplazaobj.select(campos_tplaza_2d, page_tplaza[0], num_filas);
         });
         prev_tplaza.addActionListener(e -> {
             if (page_tplaza[0] > 0) {
                 page_tplaza[0]--;
-                select("TIPUS_PLACA", cols_tplaza, campos_tplaza_2d, page_tplaza[0], num_filas);
+                tplazaobj.select(campos_tplaza_2d, page_tplaza[0], num_filas);
             }
         });
 
         // listeners de plaza
         recharge_plaza.addActionListener(e -> {
             page_plaza[0] = 0;
-            select("PLACA", cols_plaza, campos_plaza_2d, page_plaza[0], num_filas);
+            plazaobj.select(campos_plaza_2d, page_plaza[0], num_filas);
         });
         next_plaza.addActionListener(e -> {
             page_plaza[0]++;
-            select("PLACA", cols_plaza, campos_plaza_2d, page_plaza[0], num_filas);
+            plazaobj.select(campos_plaza_2d, page_plaza[0], num_filas);
         });
         prev_plaza.addActionListener(e -> {
             if (page_plaza[0] > 0) {
                 page_plaza[0]--;
-                select("PLACA", cols_plaza, campos_plaza_2d, page_plaza[0], num_filas);
+                plazaobj.select(campos_plaza_2d, page_plaza[0], num_filas);
             }
         });
 
         // listeners de empleados
         recharge_emp.addActionListener(e -> {
             page_emp[0] = 0;
-            select("EMPLEAT", cols_emp, campos_emp_2d, page_emp[0], num_filas);
+            empleadosobj.select(campos_emp_2d, page_emp[0], num_filas);
         });
         next_emp.addActionListener(e -> {
             page_emp[0]++;
-            select("EMPLEAT", cols_emp, campos_emp_2d, page_emp[0], num_filas);
+            empleadosobj.select(campos_emp_2d, page_emp[0], num_filas);
         });
         prev_emp.addActionListener(e -> {
             if (page_emp[0] > 0) {
                 page_emp[0]--;
-                select("EMPLEAT", cols_emp, campos_emp_2d, page_emp[0], num_filas);
+                empleadosobj.select(campos_emp_2d, page_emp[0], num_filas);
             }
         });
 
         // listeners de nominas
         recharge_nom.addActionListener(e -> {
             page_nom[0] = 0;
-            select("NOMINA", cols_nom, campos_nom_2d, page_nom[0], num_filas);
+            nominaobj.select(campos_nom_2d, page_nom[0], num_filas);
         });
         next_nom.addActionListener(e -> {
             page_nom[0]++;
-            select("NOMINA", cols_nom, campos_nom_2d, page_nom[0], num_filas);
+            nominaobj.select(campos_nom_2d, page_nom[0], num_filas);
         });
         prev_nom.addActionListener(e -> {
             if (page_nom[0] > 0) {
                 page_nom[0]--;
-                select("NOMINA", cols_nom, campos_nom_2d, page_nom[0], num_filas);
+                nominaobj.select(campos_nom_2d, page_nom[0], num_filas);
             }
         });
 
@@ -548,124 +531,12 @@ public class Main {
         bd.create();
 
         // cargamos los datos iniciales de la base de datos en los textfields
-        select("TIPUS_PLACA", cols_tplaza, campos_tplaza_2d, page_tplaza[0], num_filas);
-        select("PLACA", cols_plaza, campos_plaza_2d, page_plaza[0], num_filas);
-        select("EMPLEAT", cols_emp, campos_emp_2d, page_emp[0], num_filas);
-        select("NOMINA", cols_nom, campos_nom_2d, page_nom[0], num_filas);
+        tplazaobj.select(campos_tplaza_2d, page_tplaza[0], num_filas);
+        plazaobj.select(campos_plaza_2d, page_plaza[0], num_filas);
+        empleadosobj.select(campos_emp_2d, page_emp[0], num_filas);
+        nominaobj.select(campos_nom_2d, page_nom[0], num_filas);
 
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-    }
-
-    // metodo de insertar
-    // le pasamos por parametros la tabla, las columnas, y cada columna del usuario
-    // primero pide el dato al usuario, construye el sql y hace el insert
-    public static void insertar(String tabla, String[] columnas, String[] registros) {
-
-        // cogemos todas la longitud de las columnas
-        // para ir preguntando al usuario cada registro e ir guardandolo en esta variable
-        String[] dato_registro = new String[columnas.length];
-        // hacemos el comando para el sql
-        String sql = ("INSERT INTO " + tabla + " VALUES ");
-        String dato = "";
-        String columna = "";
-
-        // pedimos cada dato al usuario en orden
-        for (int j = 0; j < columnas.length; j++) {
-            // guarda la respuesta del usuario
-            dato_registro[j] = JOptionPane.showInputDialog(null, registros[j]);
-            // si el usuario cancela cualquier dialogo, salimos sin hacer nada
-            if (dato_registro[j] == null) {
-                return;
-            }
-        }
-
-        // ahora tienen coma las columnas y los registros
-        for (int i = 0; i < columnas.length; i++) {
-            columna += columnas[i];
-            if (i < columnas.length - 1) {
-                columna += ",";
-            }
-            dato += "('" + dato_registro[i] + "')";
-            if (i < dato_registro.length - 1) {
-                dato += ",";
-            }
-        }
-
-        sql = ("INSERT INTO " + tabla + " (" + columna + ") VALUES (" + dato + ")"); // comando
-        // nos conectamos al sql
-        try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
-            // ejcutamos el comando de sqlite
-            stmt.executeUpdate(sql);
-            JOptionPane.showMessageDialog(null, "Registro añadido correctamente en " + tabla + ".");
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al insertar en " + tabla + ":\n" + e.getMessage(),
-                    "Error SQL", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    // metodo de eliminar
-    // primero pide el valor de la pk, despues ejecuta el delete y avisa si no existia
-    public static void delete(String tabla, String pk) {
-        String sql = "";
-        String del_pk = JOptionPane.showInputDialog(null, pk + " a eliminar de " + tabla + ":");
-        // construimos el sql con el id directamente incrustado
-        if (tabla.equals("TIPUS_PLACA")) {
-            sql = ("DELETE FROM " + tabla + " WHERE " + pk + " = '" + del_pk + "'");
-        } else {
-            sql = ("DELETE FROM " + tabla + " WHERE " + pk + " = " + del_pk);
-        }
-
-        // hago la conexion a la base de datos
-        try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
-            // ejecuto el comando de sql
-            stmt.executeUpdate(sql);
-            // si no existe la primary key
-            if (del_pk != null) {
-                JOptionPane.showMessageDialog(null, "Registro eliminado correctamente de " + tabla + ".");
-            } else { // si no existe
-                JOptionPane.showMessageDialog(null, "No se encontro ningun registro con " + pk + " " + del_pk + " en " + tabla,
-                        "Aviso", JOptionPane.WARNING_MESSAGE);
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al eliminar de " + tabla + ":\n" + e.getMessage(),
-                    "Error SQL", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    public static void update(String tabla, String[] columnas, String[] registros) {
-        String cols = "";
-        String sql = ("UPDATE " + tabla + "SET " + cols + " = ? WHERE NOM = ?");
-    }
-
-    // metodo de select: rellena los textfields de la pestaña correspondiente con paginacion
-    public static void select(String tabla, String[] columnas, JTextField[][] campos, int page, int numFilas) {
-        // limpiamos todos los textfields antes de rellenar
-        for (JTextField[] col : campos) {
-            for (JTextField tf : col) {
-                tf.setText("");
-                tf.setEditable(false);
-            }
-        }
-
-        String cols = String.join(",", columnas);
-        String sql = "SELECT " + cols + " FROM " + tabla
-                + " ORDER BY " + columnas[0]
-                + " LIMIT " + numFilas + " OFFSET " + (page * numFilas);
-
-        try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
-            java.sql.ResultSet rs = stmt.executeQuery(sql);
-            int row = 0;
-            while (rs.next() && row < numFilas) {
-                for (int c = 0; c < columnas.length; c++) {
-                    String val = rs.getString(columnas[c]);
-                    campos[c][row].setText(val != null ? val : "");
-                }
-                row++;
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al hacer select de " + tabla + ":\n" + e.getMessage(),
-                    "Error SQL", JOptionPane.ERROR_MESSAGE);
-        }
     }
 }
