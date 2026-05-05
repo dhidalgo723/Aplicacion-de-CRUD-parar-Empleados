@@ -182,6 +182,7 @@ public class Main {
         JButton recharge_nom = new JButton("🔁");
         JButton next_nom = new JButton("➡️");
 
+        // cambiar esto --> "skibidi"
         // 2d arrays y columnas para cada tabla
         JTextField[][] campos_tplaza_2d = {campos_nom_tplaza, campos_fun_tplaza};
         String[] cols_tplaza = {"NOM", "FUNCIO"};
@@ -194,6 +195,7 @@ public class Main {
 
         JTextField[][] campos_nom_2d = {campos_id_nom, campos_nom_nom, campos_fun_nom};
         String[] cols_nom = {"ID_NOMINA", "IBAN_PAGAMENT", "IMPORT"};
+        // "skibidi"
 
         // listeners de tipos de plaza
         recharge_tplaza.addActionListener(e -> {
