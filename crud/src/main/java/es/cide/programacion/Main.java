@@ -1,4 +1,3 @@
-// makush
 package es.cide.programacion;
 
 import java.awt.BorderLayout;
@@ -6,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.LinkedHashMap;
+import java.util.TreeMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -31,31 +32,6 @@ public class Main {
     static int num_filas = 6;
 
     public static void main(String[] args) {
-
-        // configurar tipos de plaza con setters
-        tplazaobj.setTabla("TIPUS_PLACA");
-        tplazaobj.setColumnas(new String[]{"NOM", "FUNCIO"});
-        tplazaobj.setRegistros(new String[]{"Nombre del tipo de plaza:", "Descripcion del tipo de plaza:"});
-        tplazaobj.setPk("NOM");
-
-        // configurar plazas con setters
-        plazaobj.setTabla("PLACA");
-        plazaobj.setColumnas(new String[]{"CODI", "NOM", "SALARI", "INFORME_SUPERVISIO", "CODI_PLACA_SUPERVISORA", "NOM_TIPUS_PLACA"});
-        plazaobj.setRegistros(new String[]{"Código de la plaza:", "Nombre de la plaza:", "Salario de la plaza:", "Información de la plaza:", "Código de la plaza supervisora:", "Tipo de plaza:"});
-        plazaobj.setPk("CODI");
-
-        // configurar empleados con setters
-        empleadosobj.setTabla("EMPLEAT");
-        empleadosobj.setColumnas(new String[]{"NSS", "NOM", "LLINATGES", "EMAIL", "IBAN"});
-        empleadosobj.setRegistros(new String[]{"NSS del empleado:", "Nombre del empleado:", "Apellidos del empleado:", "Email del empleado:", "IBAN del empleado:"});
-        empleadosobj.setPk("NSS");
-
-        // configurar nominas con setters
-        nominaobj.setTabla("NOMINA");
-        nominaobj.setColumnas(new String[]{"ID_NOMINA", "IBAN_PAGAMENT", "IMPORT", "NSS_EMPLEAT", "CODI_PLACA"});
-        nominaobj.setRegistros(new String[]{"ID de la nómina", "IBAN de pago", "Importe", "NSS del empleado", "Código de la plaza"});
-        nominaobj.setPk("ID_NOMINA");
-
         // look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -207,18 +183,55 @@ public class Main {
         JButton recharge_nom = new JButton("🔁");
         JButton next_nom = new JButton("➡️");
 
-        // 2d arrays y columnas para cada tabla
-        JTextField[][] campos_tplaza_2d = {campos_nom_tplaza, campos_fun_tplaza};
-        String[] cols_tplaza = {"NOM", "FUNCIO"};
+        // LinkedHashMap para tipos de plaza
+        LinkedHashMap<String, JTextField[]> campos_tplaza = new LinkedHashMap<>();
+        campos_tplaza.put("NOM", campos_nom_tplaza);
+        campos_tplaza.put("FUNCIO", campos_fun_tplaza);
+        tplazaobj.setCampos(campos_tplaza);
 
-        JTextField[][] campos_plaza_2d = {campos_codi_pla, campos_nom_pla, campos_salari_pla, campos_info_pla, campos_codiplaza_pla, campos_nomplaza_pla};
-        String[] cols_plaza = {"CODI", "NOM", "SALARI", "INFORME_SUPERVISIO", "CODI_PLACA_SUPERVISORA", "NOM_TIPUS_PLACA"};
+        // TreeMap para plazas
+        TreeMap<String, JTextField[]> campos_plaza = new TreeMap<>();
+        campos_plaza.put("CODI", campos_codi_pla);
+        campos_plaza.put("NOM", campos_nom_pla);
+        campos_plaza.put("SALARI", campos_salari_pla);
+        campos_plaza.put("INFORME_SUPERVISIO", campos_info_pla);
+        campos_plaza.put("CODI_PLACA_SUPERVISORA", campos_codiplaza_pla);
+        campos_plaza.put("NOM_TIPUS_PLACA", campos_nomplaza_pla);
+        plazaobj.setCampos(campos_plaza);
 
-        JTextField[][] campos_emp_2d = {campos_nss_emp, campos_nom_emp, campos_llin_emp, campos_email_emp, campos_iban_emp};
-        String[] cols_emp = {"NSS", "NOM", "LLINATGES", "EMAIL", "IBAN"};
+        // TreeMap para empleados
+        TreeMap<String, JTextField[]> campos_emp = new TreeMap<>();
+        campos_emp.put("NSS", campos_nss_emp);
+        campos_emp.put("NOM", campos_nom_emp);
+        campos_emp.put("LLINATGES", campos_llin_emp);
+        campos_emp.put("EMAIL", campos_email_emp);
+        campos_emp.put("IBAN", campos_iban_emp);
+        empleadosobj.setCampos(campos_emp);
 
-        JTextField[][] campos_nom_2d = {campos_id_nom, campos_nom_nom, campos_fun_nom};
-        String[] cols_nom = {"ID_NOMINA", "IBAN_PAGAMENT", "IMPORT"};
+        // TreeMap para nominas
+        TreeMap<String, JTextField[]> campos_nom = new TreeMap<>();
+        campos_nom.put("ID_NOMINA", campos_id_nom);
+        campos_nom.put("IBAN_PAGAMENT", campos_nom_nom);
+        campos_nom.put("IMPORT", campos_fun_nom);
+        nominaobj.setCampos(campos_nom);
+
+        // reconstruimos los 2d arrays en el orden de columnas para mantener los listeners sin cambios
+        JTextField[][] campos_tplaza_2d = new JTextField[tplazaobj.getColumnas().length][];
+        for (int i = 0; i < tplazaobj.getColumnas().length; i++) {
+            campos_tplaza_2d[i] = campos_tplaza.get(tplazaobj.getColumnas()[i]);
+        }
+        JTextField[][] campos_plaza_2d = new JTextField[plazaobj.getColumnas().length][];
+        for (int i = 0; i < plazaobj.getColumnas().length; i++) {
+            campos_plaza_2d[i] = campos_plaza.get(plazaobj.getColumnas()[i]);
+        }
+        JTextField[][] campos_emp_2d = new JTextField[empleadosobj.getColumnas().length][];
+        for (int i = 0; i < empleadosobj.getColumnas().length; i++) {
+            campos_emp_2d[i] = campos_emp.get(empleadosobj.getColumnas()[i]);
+        }
+        JTextField[][] campos_nom_2d = new JTextField[nominaobj.getColumnas().length][];
+        for (int i = 0; i < nominaobj.getColumnas().length; i++) {
+            campos_nom_2d[i] = campos_nom.get(nominaobj.getColumnas()[i]);
+        }
 
         // listeners de tipos de plaza
         recharge_tplaza.addActionListener(e -> {
@@ -528,7 +541,7 @@ public class Main {
 
         // añadimos
         frame.add(tabs, BorderLayout.CENTER);
-        bd.create();
+        bd.create(); // metodo para crear la base de datos si no esta creada
 
         // cargamos los datos iniciales de la base de datos en los textfields
         tplazaobj.select(campos_tplaza_2d, page_tplaza[0], num_filas);
