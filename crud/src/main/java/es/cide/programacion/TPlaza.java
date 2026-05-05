@@ -4,11 +4,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedHashMap;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-public class TPlaza extends BD {
+public class TPlaza {
 
     // variables para la base de datos
     private static final String URL = "jdbc:sqlite:MakuPlazas.db";
@@ -18,13 +19,15 @@ public class TPlaza extends BD {
         return DriverManager.getConnection(URL);
     }
 
-    private String tabla = "TIPUS_PLACA";
-    private String[] columnas = {"NOM", "FUNCIO"};
-    private String[] registros = {"Nombre del tipo de plaza:", "Descripcion del tipo de plaza:"};
-    private String pk = "NOM";
+    private static String tabla = "TIPUS_PLACA";
+    private static String[] columnas = {"NOM", "FUNCIO"};
+    private static String[] registros = {"Nombre del tipo de plaza:", "Descripcion del tipo de plaza:"};
+    private static String pk = "NOM";
+    private static LinkedHashMap<String, String> tipoPlazaMap = new LinkedHashMap<>();
+    private static JTextField[][] campos_tplaza_2d = {campos_nom_tplaza, campos_fun_tplaza};
+    private static String[] cols_tplaza = {"NOM", "FUNCIO"};
 
     public TPlaza(String tabla, String[] columnas, String[] registros) {
-        super(tabla, columnas, registros);
         this.tabla = tabla;
         this.columnas = columnas;
         this.registros = registros;
@@ -34,34 +37,147 @@ public class TPlaza extends BD {
 
     }
 
-    public String getTabla() { return tabla; }
-    public void setTabla(String tabla) { this.tabla = tabla; }
-
-    public String[] getColumnas() { return columnas; }
-    public void setColumnas(String[] columnas) { this.columnas = columnas; }
-
-    public String[] getRegistros() { return registros; }
-    public void setRegistros(String[] registros) { this.registros = registros; }
-
-    public String getPk() { return pk; }
-    public void setPk(String pk) { this.pk = pk; }
-
-    public void insertar() {
-        BD.insertar(tabla, columnas, registros);
+    public String getTabla() {
+        return tabla;
     }
 
-    public void delete() {
-        BD.delete(tabla, pk);
+    public void setTabla(String tabla) {
+        this.tabla = tabla;
     }
 
-    @Override
-    public void update() {
+    public String[] getColumnas() {
+        return columnas;
+    }
+
+    public void setColumnas(String[] columnas) {
+        this.columnas = columnas;
+    }
+
+    public String[] getRegistros() {
+        return registros;
+    }
+
+    public void setRegistros(String[] registros) {
+        this.registros = registros;
+    }
+
+    public String getPk() {
+        return pk;
+    }
+
+    public void setPk(String pk) {
+        this.pk = pk;
+    }
+
+    // metodo de insertar
+    // le pasamos por parametros la tabla, las columnas, y cada columna del usuario
+    // primero pide el dato al usuario, construye el sql y hace el insert
+    public static void insertar() {
+
+        // cogemos todas la longitud de las columnas
+        // para ir preguntando al usuario cada registro e ir guardandolo en esta variable
+        String[] dato_registro = new String[columnas.length];
+        // hacemos el comando para el sql
+        String sql = ("INSERT INTO " + tabla + " VALUES ");
+        String dato = "";
+        String columna = "";
+
+        // pedimos cada dato al usuario en orden
+        for (int j = 0; j < columnas.length; j++) {
+            // guarda la respuesta del usuario
+            dato_registro[j] = JOptionPane.showInputDialog(null, registros[j]);
+            // si el usuario cancela cualquier dialogo, salimos sin hacer nada
+            if (dato_registro[j] == null) {
+                return;
+            }
+        }
+
+        // ahora tienen coma las columnas y los registros
+        for (int i = 0; i < columnas.length; i++) {
+            columna += columnas[i];
+            if (i < columnas.length - 1) {
+                columna += ",";
+            }
+            dato += "('" + dato_registro[i] + "')";
+            if (i < dato_registro.length - 1) {
+                dato += ",";
+            }
+        }
+
+        sql = ("INSERT INTO " + tabla + " (" + columna + ") VALUES (" + dato + ")"); // comando
+        // nos conectamos al sql
+        try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
+            // ejcutamos el comando de sqlite
+            stmt.executeUpdate(sql);
+            JOptionPane.showMessageDialog(null, "Registro añadido correctamente en " + tabla + ".");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al insertar en " + tabla + ":\n" + e.getMessage(),
+                    "Error SQL", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // metodo de eliminar
+    // primero pide el valor de la pk, despues ejecuta el delete y avisa si no existia
+    public static void delete() {
+        String sql = "";
+        String del_pk = JOptionPane.showInputDialog(null, pk + " a eliminar de " + tabla + ":");
+        // construimos el sql con el id directamente incrustado
+        if (tabla.equals("TIPUS_PLACA")) {
+            sql = ("DELETE FROM " + tabla + " WHERE " + pk + " = '" + del_pk + "'");
+        } else {
+            sql = ("DELETE FROM " + tabla + " WHERE " + pk + " = " + del_pk);
+        }
+
+        // hago la conexion a la base de datos
+        try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
+            // ejecuto el comando de sql
+            stmt.executeUpdate(sql);
+            // si no existe la primary key
+            if (del_pk != null) {
+                JOptionPane.showMessageDialog(null, "Registro eliminado correctamente de " + tabla + ".");
+            } else { // si no existe
+                JOptionPane.showMessageDialog(null, "No se encontro ningun registro con " + pk + " " + del_pk + " en " + tabla,
+                        "Aviso", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al eliminar de " + tabla + ":\n" + e.getMessage(),
+                    "Error SQL", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static void update() {
 
     }
 
-    @Override
-    public void select(JTextField[][] campos, int page, int numFilas) {
-        BD.select(tabla, columnas, campos, page, numFilas);
+    // metodo de select: rellena los textfields de la pestaña correspondiente con paginacion
+    public static void select(JTextField[][] campos, int page, int numFilas) {
+        // limpiamos todos los textfields antes de rellenar
+        for (JTextField[] col : campos) {
+            for (JTextField tf : col) {
+                tf.setText("");
+                tf.setEditable(false);
+            }
+        }
+
+        String cols = String.join(",", columnas);
+        String sql = "SELECT " + cols + " FROM " + tabla
+                + " ORDER BY " + columnas[0]
+                + " LIMIT " + numFilas + " OFFSET " + (page * numFilas);
+
+        try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
+            java.sql.ResultSet rs = stmt.executeQuery(sql);
+            int row = 0;
+            while (rs.next() && row < numFilas) {
+                for (int c = 0; c < columnas.length; c++) {
+                    String val = rs.getString(columnas[c]);
+                    campos[c][row].setText(val != null ? val : "");
+                }
+                row++;
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al hacer select de " + tabla + ":\n" + e.getMessage(),
+                    "Error SQL", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
 }

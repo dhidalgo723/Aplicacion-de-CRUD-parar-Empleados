@@ -31,31 +31,6 @@ public class Main {
     static int num_filas = 6;
 
     public static void main(String[] args) {
-
-        // configurar tipos de plaza con setters
-        tplazaobj.setTabla("TIPUS_PLACA");
-        tplazaobj.setColumnas(new String[]{"NOM", "FUNCIO"});
-        tplazaobj.setRegistros(new String[]{"Nombre del tipo de plaza:", "Descripcion del tipo de plaza:"});
-        tplazaobj.setPk("NOM");
-
-        // configurar plazas con setters
-        plazaobj.setTabla("PLACA");
-        plazaobj.setColumnas(new String[]{"CODI", "NOM", "SALARI", "INFORME_SUPERVISIO", "CODI_PLACA_SUPERVISORA", "NOM_TIPUS_PLACA"});
-        plazaobj.setRegistros(new String[]{"Código de la plaza:", "Nombre de la plaza:", "Salario de la plaza:", "Información de la plaza:", "Código de la plaza supervisora:", "Tipo de plaza:"});
-        plazaobj.setPk("CODI");
-
-        // configurar empleados con setters
-        empleadosobj.setTabla("EMPLEAT");
-        empleadosobj.setColumnas(new String[]{"NSS", "NOM", "LLINATGES", "EMAIL", "IBAN"});
-        empleadosobj.setRegistros(new String[]{"NSS del empleado:", "Nombre del empleado:", "Apellidos del empleado:", "Email del empleado:", "IBAN del empleado:"});
-        empleadosobj.setPk("NSS");
-
-        // configurar nominas con setters
-        nominaobj.setTabla("NOMINA");
-        nominaobj.setColumnas(new String[]{"ID_NOMINA", "IBAN_PAGAMENT", "IMPORT", "NSS_EMPLEAT", "CODI_PLACA"});
-        nominaobj.setRegistros(new String[]{"ID de la nómina", "IBAN de pago", "Importe", "NSS del empleado", "Código de la plaza"});
-        nominaobj.setPk("ID_NOMINA");
-
         // look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -528,7 +503,7 @@ public class Main {
 
         // añadimos
         frame.add(tabs, BorderLayout.CENTER);
-        bd.create();
+        bd.create(); // metodo para crear la base de datos si no esta creada
 
         // cargamos los datos iniciales de la base de datos en los textfields
         tplazaobj.select(campos_tplaza_2d, page_tplaza[0], num_filas);
