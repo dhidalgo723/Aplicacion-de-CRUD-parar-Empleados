@@ -72,7 +72,7 @@ public class Empleados {
     }
 
     public void setCampos(TreeMap<String, JTextField[]> campos) {
-        Empleados.campos = campos;
+        this.campos = campos;
     }
 
     // metodo de insertar

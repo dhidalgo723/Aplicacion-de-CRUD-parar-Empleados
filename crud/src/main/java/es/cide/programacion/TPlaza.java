@@ -72,7 +72,7 @@ public class TPlaza {
     }
 
     public void setCampos(LinkedHashMap<String, JTextField[]> campos) {
-        TPlaza.campos = campos;
+        this.campos = campos;
     }
 
     // metodo de insertar

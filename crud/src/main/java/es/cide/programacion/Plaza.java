@@ -72,7 +72,7 @@ public class Plaza {
     }
 
     public void setCampos(TreeMap<String, JTextField[]> campos) {
-        Plaza.campos = campos;
+        this.campos = campos;
     }
 
     // metodo de insertar

@@ -1,4 +1,3 @@
-// makutester
 package es.cide.programacion;
 
 import java.awt.BorderLayout;
@@ -184,7 +183,6 @@ public class Main {
         JButton recharge_nom = new JButton("🔁");
         JButton next_nom = new JButton("➡️");
 
-        // cambiar esto --> "skibidi"
         // LinkedHashMap para tipos de plaza
         LinkedHashMap<String, JTextField[]> campos_tplaza = new LinkedHashMap<>();
         campos_tplaza.put("NOM", campos_nom_tplaza);
@@ -234,7 +232,6 @@ public class Main {
         for (int i = 0; i < nominaobj.getColumnas().length; i++) {
             campos_nom_2d[i] = campos_nom.get(nominaobj.getColumnas()[i]);
         }
-        // "skibidi"
 
         // listeners de tipos de plaza
         recharge_tplaza.addActionListener(e -> {

@@ -73,7 +73,7 @@ public class Nomina {
     }
 
     public void setCampos(TreeMap<String, JTextField[]> campos) {
-        Nomina.campos = campos;
+        this.campos = campos;
     }
 
     // metodo de insertar
