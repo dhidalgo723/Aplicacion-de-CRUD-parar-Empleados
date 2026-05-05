@@ -23,9 +23,7 @@ public class TPlaza {
     private static String[] columnas = {"NOM", "FUNCIO"};
     private static String[] registros = {"Nombre del tipo de plaza:", "Descripcion del tipo de plaza:"};
     private static String pk = "NOM";
-    private static LinkedHashMap<String, String> tipoPlazaMap = new LinkedHashMap<>();
-    private static JTextField[][] campos_tplaza_2d = {campos_nom_tplaza, campos_fun_tplaza};
-    private static String[] cols_tplaza = {"NOM", "FUNCIO"};
+    private static LinkedHashMap<String, JTextField[]> campos = new LinkedHashMap<>();
 
     public TPlaza(String tabla, String[] columnas, String[] registros) {
         this.tabla = tabla;
@@ -67,6 +65,14 @@ public class TPlaza {
 
     public void setPk(String pk) {
         this.pk = pk;
+    }
+
+    public LinkedHashMap<String, JTextField[]> getCampos() {
+        return campos;
+    }
+
+    public void setCampos(LinkedHashMap<String, JTextField[]> campos) {
+        TPlaza.campos = campos;
     }
 
     // metodo de insertar

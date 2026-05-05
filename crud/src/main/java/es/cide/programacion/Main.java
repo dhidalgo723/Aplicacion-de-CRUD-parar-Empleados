@@ -1,4 +1,4 @@
-// makush
+// makutester
 package es.cide.programacion;
 
 import java.awt.BorderLayout;
@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.LinkedHashMap;
+import java.util.TreeMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -183,18 +185,55 @@ public class Main {
         JButton next_nom = new JButton("➡️");
 
         // cambiar esto --> "skibidi"
-        // 2d arrays y columnas para cada tabla
-        JTextField[][] campos_tplaza_2d = {campos_nom_tplaza, campos_fun_tplaza};
-        String[] cols_tplaza = {"NOM", "FUNCIO"};
+        // LinkedHashMap para tipos de plaza
+        LinkedHashMap<String, JTextField[]> campos_tplaza = new LinkedHashMap<>();
+        campos_tplaza.put("NOM", campos_nom_tplaza);
+        campos_tplaza.put("FUNCIO", campos_fun_tplaza);
+        tplazaobj.setCampos(campos_tplaza);
 
-        JTextField[][] campos_plaza_2d = {campos_codi_pla, campos_nom_pla, campos_salari_pla, campos_info_pla, campos_codiplaza_pla, campos_nomplaza_pla};
-        String[] cols_plaza = {"CODI", "NOM", "SALARI", "INFORME_SUPERVISIO", "CODI_PLACA_SUPERVISORA", "NOM_TIPUS_PLACA"};
+        // TreeMap para plazas
+        TreeMap<String, JTextField[]> campos_plaza = new TreeMap<>();
+        campos_plaza.put("CODI", campos_codi_pla);
+        campos_plaza.put("NOM", campos_nom_pla);
+        campos_plaza.put("SALARI", campos_salari_pla);
+        campos_plaza.put("INFORME_SUPERVISIO", campos_info_pla);
+        campos_plaza.put("CODI_PLACA_SUPERVISORA", campos_codiplaza_pla);
+        campos_plaza.put("NOM_TIPUS_PLACA", campos_nomplaza_pla);
+        plazaobj.setCampos(campos_plaza);
 
-        JTextField[][] campos_emp_2d = {campos_nss_emp, campos_nom_emp, campos_llin_emp, campos_email_emp, campos_iban_emp};
-        String[] cols_emp = {"NSS", "NOM", "LLINATGES", "EMAIL", "IBAN"};
+        // TreeMap para empleados
+        TreeMap<String, JTextField[]> campos_emp = new TreeMap<>();
+        campos_emp.put("NSS", campos_nss_emp);
+        campos_emp.put("NOM", campos_nom_emp);
+        campos_emp.put("LLINATGES", campos_llin_emp);
+        campos_emp.put("EMAIL", campos_email_emp);
+        campos_emp.put("IBAN", campos_iban_emp);
+        empleadosobj.setCampos(campos_emp);
 
-        JTextField[][] campos_nom_2d = {campos_id_nom, campos_nom_nom, campos_fun_nom};
-        String[] cols_nom = {"ID_NOMINA", "IBAN_PAGAMENT", "IMPORT"};
+        // TreeMap para nominas
+        TreeMap<String, JTextField[]> campos_nom = new TreeMap<>();
+        campos_nom.put("ID_NOMINA", campos_id_nom);
+        campos_nom.put("IBAN_PAGAMENT", campos_nom_nom);
+        campos_nom.put("IMPORT", campos_fun_nom);
+        nominaobj.setCampos(campos_nom);
+
+        // reconstruimos los 2d arrays en el orden de columnas para mantener los listeners sin cambios
+        JTextField[][] campos_tplaza_2d = new JTextField[tplazaobj.getColumnas().length][];
+        for (int i = 0; i < tplazaobj.getColumnas().length; i++) {
+            campos_tplaza_2d[i] = campos_tplaza.get(tplazaobj.getColumnas()[i]);
+        }
+        JTextField[][] campos_plaza_2d = new JTextField[plazaobj.getColumnas().length][];
+        for (int i = 0; i < plazaobj.getColumnas().length; i++) {
+            campos_plaza_2d[i] = campos_plaza.get(plazaobj.getColumnas()[i]);
+        }
+        JTextField[][] campos_emp_2d = new JTextField[empleadosobj.getColumnas().length][];
+        for (int i = 0; i < empleadosobj.getColumnas().length; i++) {
+            campos_emp_2d[i] = campos_emp.get(empleadosobj.getColumnas()[i]);
+        }
+        JTextField[][] campos_nom_2d = new JTextField[nominaobj.getColumnas().length][];
+        for (int i = 0; i < nominaobj.getColumnas().length; i++) {
+            campos_nom_2d[i] = campos_nom.get(nominaobj.getColumnas()[i]);
+        }
         // "skibidi"
 
         // listeners de tipos de plaza

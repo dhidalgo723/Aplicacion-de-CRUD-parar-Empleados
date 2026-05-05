@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.TreeMap;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -22,6 +23,7 @@ public class Empleados {
     private static String[] columnas = {"NSS", "NOM", "LLINATGES", "EMAIL", "IBAN"};
     private static String[] registros = {"NSS del empleado:", "Nombre del empleado:", "Apellidos del empleado:", "Email del empleado:", "IBAN del empleado:"};
     private static String pk = "NSS";
+    private static TreeMap<String, JTextField[]> campos = new TreeMap<>();
 
     public Empleados(String tabla, String[] columnas, String[] registros) {
         this.tabla = tabla;
@@ -63,6 +65,14 @@ public class Empleados {
 
     public void setPk(String pk) {
         this.pk = pk;
+    }
+
+    public TreeMap<String, JTextField[]> getCampos() {
+        return campos;
+    }
+
+    public void setCampos(TreeMap<String, JTextField[]> campos) {
+        Empleados.campos = campos;
     }
 
     // metodo de insertar
