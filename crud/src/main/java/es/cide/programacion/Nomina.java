@@ -6,7 +6,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.TreeMap;
 
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class Nomina {
@@ -30,50 +32,6 @@ public class Nomina {
         this.tabla = tabla;
         this.columnas = columnas;
         this.registros = registros;
-    }
-
-    public Nomina() {
-
-    }
-
-    public String getTabla() {
-        return tabla;
-    }
-
-    public void setTabla(String tabla) {
-        this.tabla = tabla;
-    }
-
-    public String[] getColumnas() {
-        return columnas;
-    }
-
-    public void setColumnas(String[] columnas) {
-        this.columnas = columnas;
-    }
-
-    public String[] getRegistros() {
-        return registros;
-    }
-
-    public void setRegistros(String[] registros) {
-        this.registros = registros;
-    }
-
-    public String getPk() {
-        return pk;
-    }
-
-    public void setPk(String pk) {
-        this.pk = pk;
-    }
-
-    public TreeMap<String, JTextField[]> getCampos() {
-        return campos;
-    }
-
-    public void setCampos(TreeMap<String, JTextField[]> campos) {
-        this.campos = campos;
     }
 
     // metodo de insertar
@@ -129,11 +87,8 @@ public class Nomina {
         String sql = "";
         String del_pk = JOptionPane.showInputDialog(null, pk + " a eliminar de " + tabla + ":");
         // construimos el sql con el id directamente incrustado
-        if (tabla.equals("TIPUS_PLACA")) {
-            sql = ("DELETE FROM " + tabla + " WHERE " + pk + " = '" + del_pk + "'");
-        } else {
-            sql = ("DELETE FROM " + tabla + " WHERE " + pk + " = " + del_pk);
-        }
+
+        sql = ("DELETE FROM " + tabla + " WHERE " + pk + " = " + del_pk);
 
         // hago la conexion a la base de datos
         try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
@@ -152,39 +107,100 @@ public class Nomina {
         }
     }
 
+    // metodo de update
+    // pide la pk, despues muestra un combobox con las columnas y un textfield con el nuevo valor
     public void update() {
+        // introduce el pk de la fila q quiere actualizar
+        String upd_pk = JOptionPane.showInputDialog(null, pk + " a actualizar de " + tabla + ":");
+        // zi no introduce nada, sale
+        if (upd_pk == null) {
+            return;
+        }
 
+        // combobox con los registros de las columnas
+        JComboBox<String> combo = new JComboBox<>(registros);
+        // el campo para q introduzca el nuevo valor
+        JTextField campo = new JTextField(15);
+
+        // añadimos los dos al panel
+        JPanel panel = new JPanel();
+        panel.add(combo);
+        panel.add(campo);
+
+        // muestra un combobox donde puedes elegir la columna a ctualizar
+        String[] opciones = {"Actualizar", "Cancelar"};
+        int input = JOptionPane.showOptionDialog(null, panel, "Actualizar " + tabla,
+                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, opciones, opciones[0]);
+
+        // si pulsa cancelar o cierra el dialogo, salimos
+        if (input != 0) {
+            return;
+        }
+
+        // hace un getter de lo que ha escogido el usuario
+        String choosecol = columnas[combo.getSelectedIndex()];
+        String newdato = campo.getText();
+
+        // comando sql q se ejecutara
+        String sql = "UPDATE " + tabla + " SET " + choosecol + " = '" + newdato + "' WHERE " + pk + " = '" + upd_pk + "'";
+
+        // lo ejecutamos en el sql
+        try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
+            stmt.executeUpdate(sql);
+            JOptionPane.showMessageDialog(null, "Registro actualizado correctamente en " + tabla + ".");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al actualizar en " + tabla + ":\n" + e.getMessage(),
+                    "Error SQL", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // metodo de select: rellena los textfields de la pestaña correspondiente con paginacion
     public static void select(JTextField[][] campos, int page, int numFilas) {
-        // limpiamos todos los textfields antes de rellenar
-        for (JTextField[] col : campos) {
-            for (JTextField tf : col) {
-                tf.setText("");
-                tf.setEditable(false);
-            }
-        }
 
-        String cols = String.join(",", columnas);
-        String sql = "SELECT " + cols + " FROM " + tabla
-                + " ORDER BY " + columnas[0]
-                + " LIMIT " + numFilas + " OFFSET " + (page * numFilas);
+    }
 
-        try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
-            java.sql.ResultSet rs = stmt.executeQuery(sql);
-            int row = 0;
-            while (rs.next() && row < numFilas) {
-                for (int c = 0; c < columnas.length; c++) {
-                    String val = rs.getString(columnas[c]);
-                    campos[c][row].setText(val != null ? val : "");
-                }
-                row++;
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al hacer select de " + tabla + ":\n" + e.getMessage(),
-                    "Error SQL", JOptionPane.ERROR_MESSAGE);
-        }
+    public Nomina() {
+
+    }
+
+    public String getTabla() {
+        return tabla;
+    }
+
+    public void setTabla(String tabla) {
+        this.tabla = tabla;
+    }
+
+    public String[] getColumnas() {
+        return columnas;
+    }
+
+    public void setColumnas(String[] columnas) {
+        this.columnas = columnas;
+    }
+
+    public String[] getRegistros() {
+        return registros;
+    }
+
+    public void setRegistros(String[] registros) {
+        this.registros = registros;
+    }
+
+    public String getPk() {
+        return pk;
+    }
+
+    public void setPk(String pk) {
+        this.pk = pk;
+    }
+
+    public TreeMap<String, JTextField[]> getCampos() {
+        return campos;
+    }
+
+    public void setCampos(TreeMap<String, JTextField[]> campos) {
+        this.campos = campos;
     }
 
 }
