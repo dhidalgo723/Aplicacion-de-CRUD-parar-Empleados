@@ -123,6 +123,7 @@ public class Main {
         remove_empleado.setPreferredSize(new Dimension(remove_empleado.getPreferredSize().width, 50));
         update_empleado.setPreferredSize(new Dimension(update_empleado.getPreferredSize().width, 50));
 
+        // campos para q el usuario introduzca los empleados
         JTextField[] campos_nss_emp = new JTextField[num_filas];
         JTextField[] campos_nom_emp = new JTextField[num_filas];
         JTextField[] campos_llin_emp = new JTextField[num_filas];
@@ -183,13 +184,14 @@ public class Main {
         JButton recharge_nom = new JButton("🔁");
         JButton next_nom = new JButton("➡️");
 
-        // LinkedHashMap para tipos de plaza
+        // hago un diccionario para poner los campos y q esten en el orden adecuado, como este es por orden de insercion
+        // aparecen en el orden en el que fueron introducidos en la base de datos
         LinkedHashMap<String, JTextField[]> campos_tplaza = new LinkedHashMap<>();
         campos_tplaza.put("NOM", campos_nom_tplaza);
         campos_tplaza.put("FUNCIO", campos_fun_tplaza);
         tplazaobj.setCampos(campos_tplaza);
 
-        // TreeMap para plazas
+        // en este se ordenan de forma ascendente porque son ints
         TreeMap<String, JTextField[]> campos_plaza = new TreeMap<>();
         campos_plaza.put("CODI", campos_codi_pla);
         campos_plaza.put("NOM", campos_nom_pla);
@@ -510,10 +512,10 @@ public class Main {
         panel_listarnominas.add(new JLabel("ID"), gbc);
         gbc.gridx = 1;
         gbc.gridy = 2;
-        panel_listarnominas.add(new JLabel("Nom"), gbc);
+        panel_listarnominas.add(new JLabel("IBAN"), gbc);
         gbc.gridx = 2;
         gbc.gridy = 2;
-        panel_listarnominas.add(new JLabel("Funcion"), gbc);
+        panel_listarnominas.add(new JLabel("Importe"), gbc);
 
         // bucle pa ir creando los textfield
         for (int i = 0; i < num_filas; i++) {

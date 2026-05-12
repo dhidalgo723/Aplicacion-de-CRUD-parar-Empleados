@@ -108,7 +108,7 @@ public class Nomina {
     }
 
     // metodo de update
-    // pide la pk, despues muestra un combobox con las columnas y un textfield con el nuevo valor
+    // pide la pk y despues muestra un combobox donde puedes elegir el campo a cambiar
     public void update() {
         // introduce el pk de la fila q quiere actualizar
         String upd_pk = JOptionPane.showInputDialog(null, pk + " a actualizar de " + tabla + ":");
@@ -118,6 +118,7 @@ public class Nomina {
         }
 
         // combobox con los registros de las columnas
+        // hago como un arraylist donde puedo ir guardando los bombobox de los registros para q pda elegir el usuario
         JComboBox<String> combo = new JComboBox<>(registros);
         // el campo para q introduzca el nuevo valor
         JTextField campo = new JTextField(15);
