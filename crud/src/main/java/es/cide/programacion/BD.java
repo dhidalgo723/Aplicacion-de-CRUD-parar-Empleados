@@ -7,10 +7,10 @@ import java.sql.Statement;
 
 public class BD {
 
-    // variables para la base de datos
+    // ruta del archivo SQLite
     private static final String URL = "jdbc:sqlite:MakuPlazas.db";
 
-    // para tener la conexion en la base de datos
+    // abre y devuelve una conexion a la base de datos
     private static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL);
     }
@@ -19,14 +19,18 @@ public class BD {
 
     }
 
-    // crea la base de datos si no esta creada ya
+    // crea la tabla en la base de datos si no existe
     public static void create() {
         try (Connection con = DriverManager.getConnection(URL); Statement stmt = con.createStatement()) {
+
+            // tabla de tipos de plaza
             String sql = "CREATE TABLE IF NOT EXISTS TIPUS_PLACA (\r\n"
                     + "    NOM VARCHAR(25) PRIMARY KEY,\r\n"
                     + "    FUNCIO VARCHAR(200) NOT NULL\r\n"
                     + ");\r\n";
             stmt.executeUpdate(sql);
+
+            // tabla de plazas
             sql = "CREATE TABLE IF NOT EXISTS PLACA (\r\n"
                     + "    CODI INTEGER PRIMARY KEY AUTOINCREMENT,\r\n"
                     + "    NOM VARCHAR(25) NOT NULL,\r\n"
@@ -38,6 +42,8 @@ public class BD {
                     + "    FOREIGN KEY (NOM_TIPUS_PLACA) REFERENCES TIPUS_PLACA (NOM)\r\n"
                     + ");\r\n";
             stmt.executeUpdate(sql);
+
+            // tabla de empleados
             sql = "CREATE TABLE IF NOT EXISTS EMPLEAT (\r\n"
                     + "    NSS INTEGER PRIMARY KEY,\r\n"
                     + "    NOM VARCHAR(25) NOT NULL,\r\n"
@@ -46,19 +52,23 @@ public class BD {
                     + "    IBAN VARCHAR(25) UNIQUE NOT NULL CHECK (IBAN LIKE 'ES%')\r\n"
                     + ");";
             stmt.executeUpdate(sql);
+
+            // tabla de ocupaciones
             sql = "CREATE TABLE IF NOT EXISTS OCUPA (\r\n"
                     + "    NSS_EMPLEAT INTEGER NOT NULL,\r\n"
                     + "    CODI_PLACA INTEGER NOT NULL,\r\n"
-                    + "    DATA_INICI VARCHAR(20) NOT NULL,\r\n"
-                    + "    DATA_FI VARCHAR(20),\r\n"
+                    + "    DATA_INICI DATE NOT NULL,\r\n"
+                    + "    DATA_FI DATE,\r\n"
                     + "    PRIMARY KEY (NSS_EMPLEAT, CODI_PLACA),\r\n"
                     + "    FOREIGN KEY (NSS_EMPLEAT) REFERENCES EMPLEAT (NSS),\r\n"
                     + "    FOREIGN KEY (CODI_PLACA) REFERENCES PLACA (CODI)\r\n"
                     + ");\r\n";
             stmt.executeUpdate(sql);
+
+            // tabla de nominas
             sql = "CREATE TABLE IF NOT EXISTS NOMINA (\r\n"
                     + "    ID_NOMINA INTEGER PRIMARY KEY AUTOINCREMENT,\r\n"
-                    + "    IBAN_PAGAMENT VARCHAR(25) NOT NULL,\r\n"
+                    + "    IBAN_PAGAMENT VARCHAR(25) UNIQUE NOT NULL CHECK (IBAN LIKE 'ES%') NOT NULL,\r\n"
                     + "    IMPORT REAL NOT NULL,\r\n"
                     + "    NSS_EMPLEAT INTEGER NOT NULL,\r\n"
                     + "    CODI_PLACA INTEGER NOT NULL,\r\n"
@@ -66,6 +76,7 @@ public class BD {
                     + "    FOREIGN KEY (CODI_PLACA) REFERENCES PLACA (CODI)\r\n"
                     + ");";
             stmt.executeUpdate(sql);
+
         } catch (SQLException e) {
             System.err.println("Error: " + e.getMessage());
         }

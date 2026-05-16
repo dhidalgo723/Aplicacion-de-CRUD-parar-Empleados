@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
 
@@ -21,14 +22,15 @@ import javax.swing.WindowConstants;
 
 public class Main {
 
-    // objetos de cada tabla
+    // inicializo las clases y objetos
     static BD bd = new BD();
     static TPlaza tplazaobj = new TPlaza();
     static Nomina nominaobj = new Nomina();
     static Empleados empleadosobj = new Empleados();
     static Plaza plazaobj = new Plaza();
+    static Ocupa ocupaobj = new Ocupa();
 
-    // numero de filas en la lista
+    // filas q se muestran a la vez en la tabla de cada pestaña
     static int num_filas = 6;
 
     public static void main(String[] args) {
@@ -40,41 +42,42 @@ public class Main {
         }
 
         // frame
-        JFrame frame = new JFrame("Calculadora");
+        JFrame frame = new JFrame("Maku-SQL");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setSize(1000, 600);
         frame.setResizable(false);
         frame.setLayout(new BorderLayout());
 
-        // tabbedpane para controlar las pantallas
+        // pestañas para cada tabla de la base de datos
         JTabbedPane tabs = new JTabbedPane();
 
-        // pestaña tipos de plaza
+        // tipus plaza
         JPanel panel_tiposplaza = new JPanel(new GridBagLayout());
         panel_tiposplaza.setBorder(BorderFactory.createTitledBorder("Botones"));
 
         JPanel panel_listartplaza = new JPanel(new GridBagLayout());
         panel_listartplaza.setBorder(BorderFactory.createTitledBorder("Listar"));
 
-        // botones de tipos de plaza
+        // botones para tipos de plaza
         JButton add_tiposplaza = new JButton("Crear Tipo de Plaza");
         JButton remove_tiposplaza = new JButton("Eliminar Tipo de Plaza");
         JButton update_tiposplaza = new JButton("Actualizar Tipo de Plaza");
 
+        // dimension de los botones
         add_tiposplaza.setPreferredSize(new Dimension(add_tiposplaza.getPreferredSize().width, 50));
         remove_tiposplaza.setPreferredSize(new Dimension(remove_tiposplaza.getPreferredSize().width, 50));
         update_tiposplaza.setPreferredSize(new Dimension(update_tiposplaza.getPreferredSize().width, 50));
 
-        // guardo los textfields en un array para leerlos despues
-        JTextField[] campos_nom_tplaza = new JTextField[num_filas];
-        JTextField[] campos_fun_tplaza = new JTextField[num_filas];
+        // arraylist para meter la informacion
+        ArrayList<JTextField> campos_nom_tplaza = new ArrayList<>();
+        ArrayList<JTextField> campos_fun_tplaza = new ArrayList<>();
 
-        // listeners de tipos de plaza
+        // le añadimos las funciones a los botones
         add_tiposplaza.addActionListener(e -> tplazaobj.insertar());
         remove_tiposplaza.addActionListener(e -> tplazaobj.delete());
         update_tiposplaza.addActionListener(e -> tplazaobj.update());
 
-        // pestaña de plaza
+        // hacemos lo mismo con la tabla de plaza
         JPanel panel_plaza = new JPanel(new GridBagLayout());
 
         JPanel panel_botonesplaza = new JPanel(new GridBagLayout());
@@ -83,7 +86,6 @@ public class Main {
         JPanel panel_listarplaza = new JPanel(new GridBagLayout());
         panel_listarplaza.setBorder(BorderFactory.createTitledBorder("Listar"));
 
-        // botones de plaza
         JButton add_plaza = new JButton("Crear Plaza");
         JButton remove_plaza = new JButton("Eliminar Plaza");
         JButton update_plaza = new JButton("Actualizar Plaza");
@@ -92,20 +94,18 @@ public class Main {
         remove_plaza.setPreferredSize(new Dimension(remove_plaza.getPreferredSize().width, 50));
         update_plaza.setPreferredSize(new Dimension(update_plaza.getPreferredSize().width, 50));
 
-        // textfield de plazas
-        JTextField[] campos_codi_pla = new JTextField[num_filas];
-        JTextField[] campos_nom_pla = new JTextField[num_filas];
-        JTextField[] campos_salari_pla = new JTextField[num_filas];
-        JTextField[] campos_info_pla = new JTextField[num_filas];
-        JTextField[] campos_codiplaza_pla = new JTextField[num_filas];
-        JTextField[] campos_nomplaza_pla = new JTextField[num_filas];
+        ArrayList<JTextField> campos_codi_pla = new ArrayList<>();
+        ArrayList<JTextField> campos_nom_pla = new ArrayList<>();
+        ArrayList<JTextField> campos_salari_pla = new ArrayList<>();
+        ArrayList<JTextField> campos_info_pla = new ArrayList<>();
+        ArrayList<JTextField> campos_codiplaza_pla = new ArrayList<>();
+        ArrayList<JTextField> campos_nomplaza_pla = new ArrayList<>();
 
-        // listeners de plazas
         add_plaza.addActionListener(e -> plazaobj.insertar());
         remove_plaza.addActionListener(e -> plazaobj.delete());
         update_plaza.addActionListener(e -> plazaobj.update());
 
-        // pestaña empleados
+        // lo mismo para empleados
         JPanel panel_empleados = new JPanel(new GridBagLayout());
 
         JPanel panel_botonesempleados = new JPanel(new GridBagLayout());
@@ -114,7 +114,6 @@ public class Main {
         JPanel panel_listarempleados = new JPanel(new GridBagLayout());
         panel_listarempleados.setBorder(BorderFactory.createTitledBorder("Listar"));
 
-        // botones de empleado
         JButton add_empleado = new JButton("Crear Empleado");
         JButton remove_empleado = new JButton("Eliminar Empleado");
         JButton update_empleado = new JButton("Actualizar Empleado");
@@ -123,19 +122,17 @@ public class Main {
         remove_empleado.setPreferredSize(new Dimension(remove_empleado.getPreferredSize().width, 50));
         update_empleado.setPreferredSize(new Dimension(update_empleado.getPreferredSize().width, 50));
 
-        // campos para q el usuario introduzca los empleados
-        JTextField[] campos_nss_emp = new JTextField[num_filas];
-        JTextField[] campos_nom_emp = new JTextField[num_filas];
-        JTextField[] campos_llin_emp = new JTextField[num_filas];
-        JTextField[] campos_email_emp = new JTextField[num_filas];
-        JTextField[] campos_iban_emp = new JTextField[num_filas];
+        ArrayList<JTextField> campos_nss_emp = new ArrayList<>();
+        ArrayList<JTextField> campos_nom_emp = new ArrayList<>();
+        ArrayList<JTextField> campos_llin_emp = new ArrayList<>();
+        ArrayList<JTextField> campos_email_emp = new ArrayList<>();
+        ArrayList<JTextField> campos_iban_emp = new ArrayList<>();
 
-        // listeners de empleados
         add_empleado.addActionListener(e -> empleadosobj.insertar());
         remove_empleado.addActionListener(e -> empleadosobj.delete());
         update_empleado.addActionListener(e -> empleadosobj.update());
 
-        // pestaña de nominas
+        // lo mismo pa nominas
         JPanel panel_nominas = new JPanel(new GridBagLayout());
         JPanel panel_botonesnominas = new JPanel(new GridBagLayout());
         panel_botonesnominas.setBorder(BorderFactory.createTitledBorder("Botones"));
@@ -143,7 +140,6 @@ public class Main {
         JPanel panel_listarnominas = new JPanel(new GridBagLayout());
         panel_listarnominas.setBorder(BorderFactory.createTitledBorder("Listar"));
 
-        // botones nomina
         JButton add_nomina = new JButton("Crear Nomina");
         JButton remove_nomina = new JButton("Eliminar Nomina");
         JButton update_nomina = new JButton("Actualizar Nomina");
@@ -152,22 +148,51 @@ public class Main {
         remove_nomina.setPreferredSize(new Dimension(remove_nomina.getPreferredSize().width, 50));
         update_nomina.setPreferredSize(new Dimension(update_nomina.getPreferredSize().width, 50));
 
-        // textfields de nominas
-        JTextField[] campos_id_nom = new JTextField[num_filas];
-        JTextField[] campos_nom_nom = new JTextField[num_filas];
-        JTextField[] campos_fun_nom = new JTextField[num_filas];
+        ArrayList<JTextField> campos_id_nom = new ArrayList<>();
+        ArrayList<JTextField> campos_iban_nom = new ArrayList<>();
+        ArrayList<JTextField> campos_import_nom = new ArrayList<>();
+        ArrayList<JTextField> campos_nss_nom = new ArrayList<>();
+        ArrayList<JTextField> campos_codiplaza_nom = new ArrayList<>();
 
-        // listeners de nominas
         add_nomina.addActionListener(e -> nominaobj.insertar());
         remove_nomina.addActionListener(e -> nominaobj.delete());
         update_nomina.addActionListener(e -> nominaobj.update());
 
-        // botones de pasar y recargar pagina - uno por cada pestaña (un componente solo puede tener un padre)
+        // lo mismo pa la tabla de ocupa
+        JPanel panel_ocupa = new JPanel(new GridBagLayout());
+        JPanel panel_botonesocupa = new JPanel(new GridBagLayout());
+        panel_botonesocupa.setBorder(BorderFactory.createTitledBorder("Botones"));
+
+        JPanel panel_listarocupa = new JPanel(new GridBagLayout());
+        panel_listarocupa.setBorder(BorderFactory.createTitledBorder("Listar"));
+
+        JButton add_ocupa = new JButton("Crear Ocupa");
+        JButton remove_ocupa = new JButton("Eliminar Ocupa");
+        JButton update_ocupa = new JButton("Actualizar Ocupa");
+
+        add_ocupa.setPreferredSize(new Dimension(add_ocupa.getPreferredSize().width, 50));
+        remove_ocupa.setPreferredSize(new Dimension(remove_ocupa.getPreferredSize().width, 50));
+        update_ocupa.setPreferredSize(new Dimension(update_ocupa.getPreferredSize().width, 50));
+
+        ArrayList<JTextField> campos_nss_ocupa = new ArrayList<>();
+        ArrayList<JTextField> campos_codiplaza_ocupa = new ArrayList<>();
+        ArrayList<JTextField> campos_inicio_ocupa = new ArrayList<>();
+        ArrayList<JTextField> campos_fin_ocupa = new ArrayList<>();
+
+        add_ocupa.addActionListener(e -> ocupaobj.insertar());
+        remove_ocupa.addActionListener(e -> ocupaobj.delete());
+        update_ocupa.addActionListener(e -> ocupaobj.update());
+
+        // botones de abajo
+        // cada pestaña tiene su propio contador de pagina en un array de 1 elemento
+        // un array de ints pq las lambdas solo pueden capturar variables efectivamente finales
         int[] page_tplaza = {0};
         int[] page_plaza = {0};
         int[] page_emp = {0};
         int[] page_nom = {0};
+        int[] page_ocupa = {0};
 
+        // los botones de cada tabla
         JButton prev_tplaza = new JButton("⬅️");
         JButton recharge_tplaza = new JButton("🔁");
         JButton next_tplaza = new JButton("➡️");
@@ -184,15 +209,18 @@ public class Main {
         JButton recharge_nom = new JButton("🔁");
         JButton next_nom = new JButton("➡️");
 
-        // hago un diccionario para poner los campos y q esten en el orden adecuado, como este es por orden de insercion
-        // aparecen en el orden en el que fueron introducidos en la base de datos
-        LinkedHashMap<String, JTextField[]> campos_tplaza = new LinkedHashMap<>();
+        JButton prev_ocupa = new JButton("⬅️");
+        JButton recharge_ocupa = new JButton("🔁");
+        JButton next_ocupa = new JButton("➡️");
+
+        // los diccionarios con los campos para saber donde poner cada cosa del select 
+        LinkedHashMap<String, ArrayList<JTextField>> campos_tplaza = new LinkedHashMap<>();
         campos_tplaza.put("NOM", campos_nom_tplaza);
         campos_tplaza.put("FUNCIO", campos_fun_tplaza);
         tplazaobj.setCampos(campos_tplaza);
 
-        // en este se ordenan de forma ascendente porque son ints
-        TreeMap<String, JTextField[]> campos_plaza = new TreeMap<>();
+        // lo mismo pero con los treemaps
+        TreeMap<String, ArrayList<JTextField>> campos_plaza = new TreeMap<>();
         campos_plaza.put("CODI", campos_codi_pla);
         campos_plaza.put("NOM", campos_nom_pla);
         campos_plaza.put("SALARI", campos_salari_pla);
@@ -201,8 +229,7 @@ public class Main {
         campos_plaza.put("NOM_TIPUS_PLACA", campos_nomplaza_pla);
         plazaobj.setCampos(campos_plaza);
 
-        // TreeMap para empleados
-        TreeMap<String, JTextField[]> campos_emp = new TreeMap<>();
+        TreeMap<String, ArrayList<JTextField>> campos_emp = new TreeMap<>();
         campos_emp.put("NSS", campos_nss_emp);
         campos_emp.put("NOM", campos_nom_emp);
         campos_emp.put("LLINATGES", campos_llin_emp);
@@ -210,96 +237,98 @@ public class Main {
         campos_emp.put("IBAN", campos_iban_emp);
         empleadosobj.setCampos(campos_emp);
 
-        // TreeMap para nominas
-        TreeMap<String, JTextField[]> campos_nom = new TreeMap<>();
+        TreeMap<String, ArrayList<JTextField>> campos_nom = new TreeMap<>();
         campos_nom.put("ID_NOMINA", campos_id_nom);
-        campos_nom.put("IBAN_PAGAMENT", campos_nom_nom);
-        campos_nom.put("IMPORT", campos_fun_nom);
+        campos_nom.put("IBAN_PAGAMENT", campos_iban_nom);
+        campos_nom.put("IMPORT", campos_import_nom);
+        campos_nom.put("NSS_EMPLEAT", campos_nss_nom);
+        campos_nom.put("CODI_PLACA", campos_codiplaza_nom);
         nominaobj.setCampos(campos_nom);
 
-        // reconstruimos los 2d arrays en el orden de columnas para mantener los listeners sin cambios
-        JTextField[][] campos_tplaza_2d = new JTextField[tplazaobj.getColumnas().length][];
-        for (int i = 0; i < tplazaobj.getColumnas().length; i++) {
-            campos_tplaza_2d[i] = campos_tplaza.get(tplazaobj.getColumnas()[i]);
-        }
-        JTextField[][] campos_plaza_2d = new JTextField[plazaobj.getColumnas().length][];
-        for (int i = 0; i < plazaobj.getColumnas().length; i++) {
-            campos_plaza_2d[i] = campos_plaza.get(plazaobj.getColumnas()[i]);
-        }
-        JTextField[][] campos_emp_2d = new JTextField[empleadosobj.getColumnas().length][];
-        for (int i = 0; i < empleadosobj.getColumnas().length; i++) {
-            campos_emp_2d[i] = campos_emp.get(empleadosobj.getColumnas()[i]);
-        }
-        JTextField[][] campos_nom_2d = new JTextField[nominaobj.getColumnas().length][];
-        for (int i = 0; i < nominaobj.getColumnas().length; i++) {
-            campos_nom_2d[i] = campos_nom.get(nominaobj.getColumnas()[i]);
-        }
+        TreeMap<String, ArrayList<JTextField>> campos_ocupa = new TreeMap<>();
+        campos_ocupa.put("NSS_EMPLEAT", campos_nss_ocupa);
+        campos_ocupa.put("CODI_PLACA", campos_codiplaza_ocupa);
+        campos_ocupa.put("DATA_INICI", campos_inicio_ocupa);
+        campos_ocupa.put("DATA_FI", campos_fin_ocupa);
+        ocupaobj.setCampos(campos_ocupa);
 
-        // listeners de tipos de plaza
+        // añadimos la funcion select con sus respectivas cosas en los parametros
         recharge_tplaza.addActionListener(e -> {
             page_tplaza[0] = 0;
-            tplazaobj.select(campos_tplaza_2d, page_tplaza[0], num_filas);
+            tplazaobj.select(page_tplaza[0], num_filas);
         });
         next_tplaza.addActionListener(e -> {
             page_tplaza[0]++;
-            tplazaobj.select(campos_tplaza_2d, page_tplaza[0], num_filas);
+            tplazaobj.select(page_tplaza[0], num_filas);
         });
         prev_tplaza.addActionListener(e -> {
             if (page_tplaza[0] > 0) {
                 page_tplaza[0]--;
-                tplazaobj.select(campos_tplaza_2d, page_tplaza[0], num_filas);
+                tplazaobj.select(page_tplaza[0], num_filas);
             }
         });
 
-        // listeners de plaza
         recharge_plaza.addActionListener(e -> {
             page_plaza[0] = 0;
-            plazaobj.select(campos_plaza_2d, page_plaza[0], num_filas);
+            plazaobj.select(page_plaza[0], num_filas);
         });
         next_plaza.addActionListener(e -> {
             page_plaza[0]++;
-            plazaobj.select(campos_plaza_2d, page_plaza[0], num_filas);
+            plazaobj.select(page_plaza[0], num_filas);
         });
         prev_plaza.addActionListener(e -> {
             if (page_plaza[0] > 0) {
                 page_plaza[0]--;
-                plazaobj.select(campos_plaza_2d, page_plaza[0], num_filas);
+                plazaobj.select(page_plaza[0], num_filas);
             }
         });
 
-        // listeners de empleados
         recharge_emp.addActionListener(e -> {
             page_emp[0] = 0;
-            empleadosobj.select(campos_emp_2d, page_emp[0], num_filas);
+            empleadosobj.select(page_emp[0], num_filas);
         });
         next_emp.addActionListener(e -> {
             page_emp[0]++;
-            empleadosobj.select(campos_emp_2d, page_emp[0], num_filas);
+            empleadosobj.select(page_emp[0], num_filas);
         });
         prev_emp.addActionListener(e -> {
             if (page_emp[0] > 0) {
                 page_emp[0]--;
-                empleadosobj.select(campos_emp_2d, page_emp[0], num_filas);
+                empleadosobj.select(page_emp[0], num_filas);
             }
         });
 
-        // listeners de nominas
         recharge_nom.addActionListener(e -> {
             page_nom[0] = 0;
-            nominaobj.select(campos_nom_2d, page_nom[0], num_filas);
+            nominaobj.select(page_nom[0], num_filas);
         });
         next_nom.addActionListener(e -> {
             page_nom[0]++;
-            nominaobj.select(campos_nom_2d, page_nom[0], num_filas);
+            nominaobj.select(page_nom[0], num_filas);
         });
         prev_nom.addActionListener(e -> {
             if (page_nom[0] > 0) {
                 page_nom[0]--;
-                nominaobj.select(campos_nom_2d, page_nom[0], num_filas);
+                nominaobj.select(page_nom[0], num_filas);
             }
         });
 
-        // paneles de navegacion
+        recharge_ocupa.addActionListener(e -> {
+            page_ocupa[0] = 0;
+            ocupaobj.select(page_ocupa[0], num_filas);
+        });
+        next_ocupa.addActionListener(e -> {
+            page_ocupa[0]++;
+            ocupaobj.select(page_ocupa[0], num_filas);
+        });
+        prev_ocupa.addActionListener(e -> {
+            if (page_ocupa[0] > 0) {
+                page_ocupa[0]--;
+                ocupaobj.select(page_ocupa[0], num_filas);
+            }
+        });
+
+        // panel de abajo para poner los botones de abajo
         JPanel pageset_tplaza = new JPanel();
         pageset_tplaza.add(prev_tplaza);
         pageset_tplaza.add(recharge_tplaza);
@@ -320,13 +349,18 @@ public class Main {
         pageset_nom.add(recharge_nom);
         pageset_nom.add(next_nom);
 
-        // gbc (unico para todos los paneles)
+        JPanel pageset_ocupa = new JPanel();
+        pageset_ocupa.add(prev_ocupa);
+        pageset_ocupa.add(recharge_ocupa);
+        pageset_ocupa.add(next_ocupa);
+
+        // apartado gráfico
+        // grafico de tipus plaza
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 10, 5, 10);
         gbc.weightx = 1.0;
 
-        // gbc tipos de plaza
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel_tiposplaza.add(add_tiposplaza, gbc);
@@ -345,16 +379,16 @@ public class Main {
         panel_listartplaza.add(new JLabel("Funcion"), gbc);
 
         for (int i = 0; i < num_filas; i++) {
-            campos_nom_tplaza[i] = new JTextField();
-            campos_fun_tplaza[i] = new JTextField();
-            campos_fun_tplaza[i].setColumns(20);
+            campos_nom_tplaza.add(new JTextField());
+            campos_fun_tplaza.add(new JTextField());
+            campos_fun_tplaza.get(i).setColumns(20);
 
             gbc.gridx = 0;
             gbc.gridy = 3 + i;
-            panel_listartplaza.add(campos_nom_tplaza[i], gbc);
+            panel_listartplaza.add(campos_nom_tplaza.get(i), gbc);
             gbc.gridx = 1;
             gbc.gridy = 3 + i;
-            panel_listartplaza.add(campos_fun_tplaza[i], gbc);
+            panel_listartplaza.add(campos_fun_tplaza.get(i), gbc);
         }
 
         JPanel tiposplaza = new JPanel(new BorderLayout());
@@ -363,7 +397,7 @@ public class Main {
         tiposplaza.add(pageset_tplaza, BorderLayout.SOUTH);
         tabs.addTab("Tipos de Plaza", new JScrollPane(tiposplaza));
 
-        // gbc plaza
+        // grafico plaza
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel_botonesplaza.add(add_plaza, gbc);
@@ -393,36 +427,38 @@ public class Main {
         gbc.gridy = 2;
         panel_listarplaza.add(new JLabel("Nomplaza"), gbc);
 
-        // bucle pa ir creando los textfield
         for (int i = 0; i < num_filas; i++) {
-            campos_codi_pla[i] = new JTextField();
-            campos_nom_pla[i] = new JTextField();
-            campos_nom_pla[i].setColumns(25);
-            campos_salari_pla[i] = new JTextField();
-            campos_info_pla[i] = new JTextField();
-            campos_info_pla[i].setColumns(100);
-            campos_codiplaza_pla[i] = new JTextField();
-            campos_nomplaza_pla[i] = new JTextField();
-            campos_nomplaza_pla[i].setColumns(25);
+            campos_codi_pla.add(new JTextField());
+            campos_codi_pla.get(i).setColumns(5);
+            campos_nom_pla.add(new JTextField());
+            campos_nom_pla.get(i).setColumns(15);
+            campos_salari_pla.add(new JTextField());
+            campos_salari_pla.get(i).setColumns(6);
+            campos_info_pla.add(new JTextField());
+            campos_info_pla.get(i).setColumns(25);
+            campos_codiplaza_pla.add(new JTextField());
+            campos_codiplaza_pla.get(i).setColumns(5);
+            campos_nomplaza_pla.add(new JTextField());
+            campos_nomplaza_pla.get(i).setColumns(15);
 
             gbc.gridx = 0;
             gbc.gridy = 3 + i;
-            panel_listarplaza.add(campos_codi_pla[i], gbc);
+            panel_listarplaza.add(campos_codi_pla.get(i), gbc);
             gbc.gridx = 1;
             gbc.gridy = 3 + i;
-            panel_listarplaza.add(campos_nom_pla[i], gbc);
+            panel_listarplaza.add(campos_nom_pla.get(i), gbc);
             gbc.gridx = 2;
             gbc.gridy = 3 + i;
-            panel_listarplaza.add(campos_salari_pla[i], gbc);
+            panel_listarplaza.add(campos_salari_pla.get(i), gbc);
             gbc.gridx = 3;
             gbc.gridy = 3 + i;
-            panel_listarplaza.add(campos_info_pla[i], gbc);
+            panel_listarplaza.add(campos_info_pla.get(i), gbc);
             gbc.gridx = 4;
             gbc.gridy = 3 + i;
-            panel_listarplaza.add(campos_codiplaza_pla[i], gbc);
+            panel_listarplaza.add(campos_codiplaza_pla.get(i), gbc);
             gbc.gridx = 5;
             gbc.gridy = 3 + i;
-            panel_listarplaza.add(campos_nomplaza_pla[i], gbc);
+            panel_listarplaza.add(campos_nomplaza_pla.get(i), gbc);
         }
 
         JPanel plaza = new JPanel(new BorderLayout());
@@ -431,7 +467,7 @@ public class Main {
         plaza.add(pageset_plaza, BorderLayout.SOUTH);
         tabs.addTab("Plazas", new JScrollPane(plaza));
 
-        // gbc empleado
+        // grafico de empleados
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel_botonesempleados.add(add_empleado, gbc);
@@ -461,33 +497,33 @@ public class Main {
         gbc.gridy = 2;
         panel_listarempleados.add(new JLabel("IBAN"), gbc);
 
-        // bucle pa ir creando los textfield
         for (int i = 0; i < num_filas; i++) {
-            campos_nss_emp[i] = new JTextField();
-            campos_nom_emp[i] = new JTextField();
-            campos_nom_emp[i].setColumns(25);
-            campos_llin_emp[i] = new JTextField();
-            campos_llin_emp[i].setColumns(25);
-            campos_email_emp[i] = new JTextField();
-            campos_email_emp[i].setColumns(25);
-            campos_iban_emp[i] = new JTextField();
-            campos_iban_emp[i].setColumns(25);
+            campos_nss_emp.add(new JTextField());
+            campos_nss_emp.get(i).setColumns(8);
+            campos_nom_emp.add(new JTextField());
+            campos_nom_emp.get(i).setColumns(12);
+            campos_llin_emp.add(new JTextField());
+            campos_llin_emp.get(i).setColumns(15);
+            campos_email_emp.add(new JTextField());
+            campos_email_emp.get(i).setColumns(18);
+            campos_iban_emp.add(new JTextField());
+            campos_iban_emp.get(i).setColumns(18);
 
             gbc.gridx = 0;
             gbc.gridy = 3 + i;
-            panel_listarempleados.add(campos_nss_emp[i], gbc);
+            panel_listarempleados.add(campos_nss_emp.get(i), gbc);
             gbc.gridx = 1;
             gbc.gridy = 3 + i;
-            panel_listarempleados.add(campos_nom_emp[i], gbc);
+            panel_listarempleados.add(campos_nom_emp.get(i), gbc);
             gbc.gridx = 2;
             gbc.gridy = 3 + i;
-            panel_listarempleados.add(campos_llin_emp[i], gbc);
+            panel_listarempleados.add(campos_llin_emp.get(i), gbc);
             gbc.gridx = 3;
             gbc.gridy = 3 + i;
-            panel_listarempleados.add(campos_email_emp[i], gbc);
+            panel_listarempleados.add(campos_email_emp.get(i), gbc);
             gbc.gridx = 4;
             gbc.gridy = 3 + i;
-            panel_listarempleados.add(campos_iban_emp[i], gbc);
+            panel_listarempleados.add(campos_iban_emp.get(i), gbc);
         }
 
         JPanel empleados = new JPanel(new BorderLayout());
@@ -496,7 +532,7 @@ public class Main {
         empleados.add(pageset_emp, BorderLayout.SOUTH);
         tabs.addTab("Empleados", new JScrollPane(empleados));
 
-        // gbc nominas
+        // grafico nominas
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel_botonesnominas.add(add_nomina, gbc);
@@ -516,23 +552,40 @@ public class Main {
         gbc.gridx = 2;
         gbc.gridy = 2;
         panel_listarnominas.add(new JLabel("Importe"), gbc);
+        gbc.gridx = 3;
+        gbc.gridy = 2;
+        panel_listarnominas.add(new JLabel("NSS"), gbc);
+        gbc.gridx = 4;
+        gbc.gridy = 2;
+        panel_listarnominas.add(new JLabel("Plaza"), gbc);
 
-        // bucle pa ir creando los textfield
         for (int i = 0; i < num_filas; i++) {
-            campos_id_nom[i] = new JTextField();
-            campos_nom_nom[i] = new JTextField();
-            campos_fun_nom[i] = new JTextField();
-            campos_fun_nom[i].setColumns(20);
+            campos_id_nom.add(new JTextField());
+            campos_id_nom.get(i).setColumns(5);
+            campos_iban_nom.add(new JTextField());
+            campos_iban_nom.get(i).setColumns(18);
+            campos_import_nom.add(new JTextField());
+            campos_import_nom.get(i).setColumns(6);
+            campos_nss_nom.add(new JTextField());
+            campos_nss_nom.get(i).setColumns(8);
+            campos_codiplaza_nom.add(new JTextField());
+            campos_codiplaza_nom.get(i).setColumns(5);
 
             gbc.gridx = 0;
             gbc.gridy = 3 + i;
-            panel_listarnominas.add(campos_id_nom[i], gbc);
+            panel_listarnominas.add(campos_id_nom.get(i), gbc);
             gbc.gridx = 1;
             gbc.gridy = 3 + i;
-            panel_listarnominas.add(campos_nom_nom[i], gbc);
+            panel_listarnominas.add(campos_iban_nom.get(i), gbc);
             gbc.gridx = 2;
             gbc.gridy = 3 + i;
-            panel_listarnominas.add(campos_fun_nom[i], gbc);
+            panel_listarnominas.add(campos_import_nom.get(i), gbc);
+            gbc.gridx = 3;
+            gbc.gridy = 3 + i;
+            panel_listarnominas.add(campos_nss_nom.get(i), gbc);
+            gbc.gridx = 4;
+            gbc.gridy = 3 + i;
+            panel_listarnominas.add(campos_codiplaza_nom.get(i), gbc);
         }
 
         JPanel nominas = new JPanel(new BorderLayout());
@@ -541,17 +594,70 @@ public class Main {
         nominas.add(pageset_nom, BorderLayout.SOUTH);
         tabs.addTab("Nominas", new JScrollPane(nominas));
 
-        // añadimos
+        // grafico nomina
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel_botonesocupa.add(add_ocupa, gbc);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        panel_botonesocupa.add(remove_ocupa, gbc);
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        panel_botonesocupa.add(update_ocupa, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panel_listarocupa.add(new JLabel("NSS"), gbc);
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        panel_listarocupa.add(new JLabel("Plaza"), gbc);
+        gbc.gridx = 2;
+        gbc.gridy = 2;
+        panel_listarocupa.add(new JLabel("Inicio"), gbc);
+        gbc.gridx = 3;
+        gbc.gridy = 2;
+        panel_listarocupa.add(new JLabel("Fin"), gbc);
+
+        for (int i = 0; i < num_filas; i++) {
+            campos_nss_ocupa.add(new JTextField());
+            campos_nss_ocupa.get(i).setColumns(8);
+            campos_codiplaza_ocupa.add(new JTextField());
+            campos_codiplaza_ocupa.get(i).setColumns(5);
+            campos_inicio_ocupa.add(new JTextField());
+            campos_inicio_ocupa.get(i).setColumns(10);
+            campos_fin_ocupa.add(new JTextField());
+            campos_fin_ocupa.get(i).setColumns(10);
+
+            gbc.gridx = 0;
+            gbc.gridy = 3 + i;
+            panel_listarocupa.add(campos_nss_ocupa.get(i), gbc);
+            gbc.gridx = 1;
+            gbc.gridy = 3 + i;
+            panel_listarocupa.add(campos_codiplaza_ocupa.get(i), gbc);
+            gbc.gridx = 2;
+            gbc.gridy = 3 + i;
+            panel_listarocupa.add(campos_inicio_ocupa.get(i), gbc);
+            gbc.gridx = 3;
+            gbc.gridy = 3 + i;
+            panel_listarocupa.add(campos_fin_ocupa.get(i), gbc);
+        }
+
+        JPanel ocupa = new JPanel(new BorderLayout());
+        ocupa.add(panel_botonesocupa, BorderLayout.NORTH);
+        ocupa.add(panel_listarocupa, BorderLayout.CENTER);
+        ocupa.add(pageset_ocupa, BorderLayout.SOUTH);
+        tabs.addTab("Ocupa", new JScrollPane(ocupa));
+
         frame.add(tabs, BorderLayout.CENTER);
-        bd.create(); // metodo para crear la base de datos si no esta creada
+        bd.create();
 
-        // cargamos los datos iniciales de la base de datos en los textfields
-        tplazaobj.select(campos_tplaza_2d, page_tplaza[0], num_filas);
-        plazaobj.select(campos_plaza_2d, page_plaza[0], num_filas);
-        empleadosobj.select(campos_emp_2d, page_emp[0], num_filas);
-        nominaobj.select(campos_nom_2d, page_nom[0], num_filas);
+        tplazaobj.select(page_tplaza[0], num_filas);
+        plazaobj.select(page_plaza[0], num_filas);
+        empleadosobj.select(page_emp[0], num_filas);
+        nominaobj.select(page_nom[0], num_filas);
+        ocupaobj.select(page_ocupa[0], num_filas);
 
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        frame.setLocationRelativeTo(null); // centra la ventana
+        frame.setVisible(true); // lo hacce visible
     }
 }

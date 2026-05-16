@@ -2,21 +2,24 @@ package es.cide.programacion;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.TreeMap;
 
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class Plaza {
 
-    // variables para la base de datos
+    // ruta del archivo SQLite
     private static final String URL = "jdbc:sqlite:MakuPlazas.db";
 
-    // para tener la conexion en la base de datos
+    // abre y devuelve una conexion a la base de datos
     private static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL);
     }
@@ -25,7 +28,7 @@ public class Plaza {
     private static String[] columnas = {"CODI", "NOM", "SALARI", "INFORME_SUPERVISIO", "CODI_PLACA_SUPERVISORA", "NOM_TIPUS_PLACA"};
     private static String[] registros = {"Código de la plaza:", "Nombre de la plaza:", "Salario de la plaza:", "Información de la plaza:", "Código de la plaza supervisora:", "Tipo de plaza:"};
     private static String pk = "CODI";
-    private static TreeMap<String, JTextField[]> campos = new TreeMap<>();
+    private static TreeMap<String, ArrayList<JTextField>> campos = new TreeMap<>();
 
     public Plaza(String tabla, String[] columnas, String[] registros) {
         this.tabla = tabla;
@@ -33,30 +36,28 @@ public class Plaza {
         this.registros = registros;
     }
 
-    // metodo de insertar
-    // le pasamos por parametros la tabla, las columnas, y cada columna del usuario
-    // primero pide el dato al usuario, construye el sql y hace el insert
+    // funcion de insertar en la base de datos
     public static void insertar() {
-
-        // cogemos todas la longitud de las columnas
-        // para ir preguntando al usuario cada registro e ir guardandolo en esta variable
         String[] dato_registro = new String[columnas.length];
-        // hacemos el comando para el sql
         String sql = ("INSERT INTO " + tabla + " VALUES ");
         String dato = "";
         String columna = "";
 
-        // pedimos cada dato al usuario en orden
+        // preguntamos al usuario por cada campo en orden
         for (int j = 0; j < columnas.length; j++) {
-            // guarda la respuesta del usuario
-            dato_registro[j] = JOptionPane.showInputDialog(null, registros[j]);
-            // si el usuario cancela cualquier dialogo, salimos sin hacer nada
+            if (columnas[j].equals("CODI_PLACA_SUPERVISORA")) {
+                dato_registro[j] = pedirFK("PLACA", "CODI", registros[j]);
+            } else if (columnas[j].equals("NOM_TIPUS_PLACA")) {
+                dato_registro[j] = pedirFK("TIPUS_PLACA", "NOM", registros[j]);
+            } else {
+                dato_registro[j] = JOptionPane.showInputDialog(null, registros[j]);
+            }
             if (dato_registro[j] == null) {
                 return;
             }
         }
 
-        // ahora tienen coma las columnas y los registros
+        // hacemos un for para convertirlo todo en un string para pasarlo por el comando de sqlite
         for (int i = 0; i < columnas.length; i++) {
             columna += columnas[i];
             if (i < columnas.length - 1) {
@@ -68,10 +69,9 @@ public class Plaza {
             }
         }
 
-        sql = ("INSERT INTO " + tabla + " (" + columna + ") VALUES (" + dato + ")"); // comando
-        // nos conectamos al sql
+        // lo ejecutamos
+        sql = ("INSERT INTO " + tabla + " (" + columna + ") VALUES (" + dato + ")");
         try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
-            // ejcutamos el comando de sqlite
             stmt.executeUpdate(sql);
             JOptionPane.showMessageDialog(null, "Registro añadido correctamente en " + tabla + ".");
         } catch (SQLException e) {
@@ -80,22 +80,56 @@ public class Plaza {
         }
     }
 
-    // metodo de eliminar
-    // primero pide el valor de la pk, despues ejecuta el delete y avisa si no existia
+    // funcion de pedir la fk
+    private static String pedirFK(String tablaRef, String colRef, String etiqueta) {
+        ArrayList<String> valores = new ArrayList<>(); // array de los valores q pediremos
+        String sqlFK = "SELECT " + colRef + " FROM " + tablaRef; // comando sqlite
+        try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
+            ResultSet rs = stmt.executeQuery(sqlFK);
+            // cargamos todos los valores existentes en la lista
+            while (rs.next()) {
+                valores.add(rs.getString(colRef));
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al leer " + tablaRef + ":\n" + e.getMessage(),
+                    "Error SQL", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        // si la tabla referenciada esta vacia no podemos elegir FK valida
+        if (valores.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "No hay registros en " + tablaRef + " para elegir.",
+                    "Aviso", JOptionPane.WARNING_MESSAGE);
+            return null;
+        }
+
+        // montamos el panel con el combobox para q el usuario eliga
+        JComboBox<String> combo = new JComboBox<>(valores.toArray(new String[0]));
+        JPanel panel = new JPanel();
+        panel.add(new JLabel(etiqueta));
+        panel.add(combo);
+
+        String[] opciones = {"Aceptar", "Cancelar"};
+        int input = JOptionPane.showOptionDialog(null, panel, "Insertar en " + tabla,
+                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, opciones, opciones[0]);
+        if (input != 0) {
+            return null;
+        }
+        return (String) combo.getSelectedItem();
+    }
+
+    // funcion de eliminar cosas 
     public static void delete() {
         String sql = "";
         String del_pk = JOptionPane.showInputDialog(null, pk + " a eliminar de " + tabla + ":");
-        // construimos el sql con el id directamente incrustado
-        sql = ("DELETE FROM " + tabla + " WHERE " + pk + " = " + del_pk);
+        sql = ("DELETE FROM " + tabla + " WHERE " + pk + " = '" + del_pk + "'");
 
-        // hago la conexion a la base de datos
         try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
-            // ejecuto el comando de sql
             stmt.executeUpdate(sql);
-            // si no existe la primary key
+            // del_pk es null solo si el usuario pulso cancelar, en ese caso avisamos
             if (del_pk != null) {
                 JOptionPane.showMessageDialog(null, "Registro eliminado correctamente de " + tabla + ".");
-            } else { // si no existe
+            } else {
                 JOptionPane.showMessageDialog(null, "No se encontro ningun registro con " + pk + " " + del_pk + " en " + tabla,
                         "Aviso", JOptionPane.WARNING_MESSAGE);
             }
@@ -105,45 +139,36 @@ public class Plaza {
         }
     }
 
-    // metodo de update
-    // pide la pk y despues muestra un combobox donde puedes elegir el campo a cambiar
-    public void update() {
-        // introduce el pk de la fila q quiere actualizar
+    // funcion de actualizar
+    public static void update() {
         String upd_pk = JOptionPane.showInputDialog(null, pk + " a actualizar de " + tabla + ":");
-        // zi no introduce nada, sale
+        // si el usuario cancela, salimos
         if (upd_pk == null) {
             return;
         }
 
-        // combobox con los registros de las columnas
-        // hago como un arraylist donde puedo ir guardando los bombobox de los registros para q pda elegir el usuario
         JComboBox<String> combo = new JComboBox<>(registros);
-        // el campo para q introduzca el nuevo valor
         JTextField campo = new JTextField(15);
 
-        // añadimos los dos al panel
         JPanel panel = new JPanel();
         panel.add(combo);
         panel.add(campo);
 
-        // muestra un combobox donde puedes elegir la columna a ctualizar
         String[] opciones = {"Actualizar", "Cancelar"};
         int input = JOptionPane.showOptionDialog(null, panel, "Actualizar " + tabla,
                 JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, opciones, opciones[0]);
 
-        // si pulsa cancelar o cierra el dialogo, salimos
         if (input != 0) {
             return;
         }
 
-        // hace un getter de lo que ha escogido el usuario
+        // el indice del combobox coincide con el indice en columnas[], asi obtenemos el nombre real de la columna
         String choosecol = columnas[combo.getSelectedIndex()];
         String newdato = campo.getText();
 
-        // comando sql q se ejecutara
+        // comando sqlite
         String sql = "UPDATE " + tabla + " SET " + choosecol + " = '" + newdato + "' WHERE " + pk + " = '" + upd_pk + "'";
 
-        // lo ejecutamos en el sql
         try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
             stmt.executeUpdate(sql);
             JOptionPane.showMessageDialog(null, "Registro actualizado correctamente en " + tabla + ".");
@@ -153,28 +178,30 @@ public class Plaza {
         }
     }
 
-    // metodo de select: rellena los textfields de la pestaña correspondiente con paginacion
-    public static void select(JTextField[][] campos, int page, int numFilas) {
-        // limpiamos todos los textfields antes de rellenar
-        for (JTextField[] col : campos) {
-            for (JTextField tf : col) {
-                tf.setText("");
-                tf.setEditable(false);
+    // funcion de listar la base de datos
+    public static void select(int page, int numFilas) {
+        String cols = "";
+        for (int i = 0; i < columnas.length; i++) {
+            cols += columnas[i];
+            if (i < columnas.length - 1) {
+                cols += ",";
             }
         }
 
-        String cols = String.join(",", columnas);
+        // LIMIT limita cuantas filas devuelve; OFFSET salta las filas de las paginas anteriores
         String sql = "SELECT " + cols + " FROM " + tabla
                 + " ORDER BY " + columnas[0]
                 + " LIMIT " + numFilas + " OFFSET " + (page * numFilas);
 
         try (Connection con = getConnection(); Statement stmt = con.createStatement()) {
-            java.sql.ResultSet rs = stmt.executeQuery(sql);
-            int row = 0;
+            ResultSet rs = stmt.executeQuery(sql);
+            int row = 0; // indice de la fila visual
             while (rs.next() && row < numFilas) {
-                for (int c = 0; c < columnas.length; c++) {
-                    String val = rs.getString(columnas[c]);
-                    campos[c][row].setText(val != null ? val : "");
+                // para cada columna, ponemos el valor en el textfield de esa fila
+                for (int j = 0; j < columnas.length; j++) {
+                    String dato = rs.getString(columnas[j]);
+                    // si el valor es null (campo vacio en BD), ponemos cadena vacia para no mostrar "null"
+                    campos.get(columnas[j]).get(row).setText(dato != null ? dato : "");
                 }
                 row++;
             }
@@ -220,11 +247,11 @@ public class Plaza {
         this.pk = pk;
     }
 
-    public TreeMap<String, JTextField[]> getCampos() {
+    public TreeMap<String, ArrayList<JTextField>> getCampos() {
         return campos;
     }
 
-    public void setCampos(TreeMap<String, JTextField[]> campos) {
+    public void setCampos(TreeMap<String, ArrayList<JTextField>> campos) {
         this.campos = campos;
     }
 
